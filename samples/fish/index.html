@@ -1,0 +1,190 @@
+<html>
+<meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+<script src="../../dist/amino.js"></script>
+<style type="text/css">
+#canvas { position: absolute; border: 0px solid black; top: 0; left: 0; }
+body {
+    width: 750px;
+    background-color: #8888ff;
+    background-image: url(background.png);
+    color: white;
+    margin:0;
+    padding:0;
+    font-family: serif;
+}
+
+h1 { font-size: 400%; text-align: center; margin-bottom: 0; }
+h2 { font-size: 80%; text-align: center; margin-top: 0; }
+p { margin: 50px auto 5px auto; border: 0px solid black; width: 14em; font-size: 250%;line-height: 1.5em;}
+
+</style>
+
+<link rel="stylesheet" href="stylesheet.css" type="text/css" charset="utf-8">
+<style type="text/css" media="screen">
+    h1 {font: 70px/80px SortsMillGoudyRegular, Georgia, serif; letter-spacing: 0;}
+    p {font: 36px/42px SortsMillGoudyRegular, Georgia, serif;}
+    p.style2 {font: 18px/27px 'SortsMillGoudyItalic', Arial, sans-serif;}
+    
+</style>
+
+<body>
+
+
+
+<h1>Big Fish<br/> Little Fish</h1>
+<h2>by josh marinacci</h2>
+
+<p>Oh big fish, Oh little fish,<br/>
+Oh where do you hide?<br/>
+<br/>
+Above the clouds, below the sea<br/>
+or beyond the ocean wide?<br/>
+<br/>
+When we fish, for the big fish<br/>
+where will little fish abide?<br/>
+<br/>
+Oh big fish, Oh little fish<br/>
+into the sea we ride.<br/>
+</p>
+
+
+
+<canvas id="canvas" width="750" height="1000"></canvas>
+
+<script language="JavaScript">
+
+
+var fishnode = 
+    new PathNode()
+      .setPath(
+        new Path()
+          .moveTo(270.5,61.0)
+          .curveTo(266.48384893499855,61.0,262.58922902102665,61.560362613511764,258.8798780183454,62.61244717563876)
+          .lineTo(258.8798927408447,62.61244717563876)
+          .curveTo(264.207258667021,66.73050664589489,268.79592282639425,72.92139645393638,272.24013418012663,80.53362901627736)
+          .lineTo(272.2401341521028,80.53362901627736)
+          .curveTo(240.3254309581555,82.64361194218532,211.9516183439392,90.88411309708349,191.34399556621162,102.98985797449718)
+          .curveTo(174.1045989810349,87.07869872126713,148.53737723840692,77.0,120.0,77.0)
+          .curveTo(107.15607956631095,77.0,94.91381241019593,79.04160426211675,83.76165580801285,82.73768441306665)
+          .lineTo(83.76167867324705,82.73768441306665)
+          .curveTo(114.72185440263593,94.92595128683826,136.0,120.2435692561273,136.0,149.5)
+          .curveTo(136.0,180.4657275161149,112.16288624628828,207.01894982905299,78.23833175306163,218.26231970947737)
+          .lineTo(78.23833179868541,218.26231970947737)
+          .curveTo(90.81945427437228,223.2151995505037,104.99939190500652,226.0,120.0,226.0)
+          .curveTo(149.2714985493846,226.0,175.41806210665607,215.39608436197588,192.65781652942363,198.77069589026934)
+          .lineTo(192.65781655478938,198.77069589026934)
+          .curveTo(216.64427259219315,212.4542048473226,250.710639638004,221.0,288.5,221.0)
+          .curveTo(361.1254446027493,221.0,420.0,189.43607486307093,420.0,150.5)
+          .curveTo(420.0,114.92397402492432,370.84834213027546,85.5026167120366,306.96576407494797,80.68963153457318)
+          .lineTo(306.9657001419154,80.68963153457318)
+          .curveTo(298.66854077196206,68.73708810232313,285.4232781998676,61.0,270.5,61.0)
+          .closeTo()
+          .build()
+      )
+        .setStrokeWidth(3.0)
+        .setStroke("rgba(100,200,255,0.9)")
+        .setFill('rgba(150,200,255,0.6)')
+        ;
+
+
+var runner = new Amino();
+var canvas = runner.addCanvas("canvas");
+//runner.transparentBackground = true;
+//runner.clearBackground = true;
+//runner.setBackground("rgba(0,0,0,0)");
+var g = new Group();
+canvas.add(g);
+//runner.fps = 30;
+//runner.DEBUG = false;
+    
+
+function ParticleEmitter() {
+    Group.call(this)
+    this.rate = 50;
+    this.max = 10;    
+    this.tick = 0;
+    this.create = function(){};
+    this.update = function(p){};
+    this.destroy = function(p){};
+    this.parts = [];
+    var self = this;
+    
+    this.process = function() {
+        self.tick++;
+        if(self.tick%self.rate == 0 && self.parts.length < self.max) {
+            var c = self.create();
+            self.add(c);
+            self.parts.push(c);
+        }
+        for(var i=0; i<self.parts.length; i++) {
+            var c = self.parts[i];
+            self.update(c);
+        }
+    };
+    return true;
+}
+ParticleEmitter.extend(Group);
+
+
+
+var em = new ParticleEmitter();
+em.rate = 80;
+em.max = 10;
+em.create = function() {
+    var scale = 0.1+Math.random()*0.5;
+    var c = new Transform(fishnode)
+        .setScaleX(scale)
+        .setScaleY(scale)
+        .setTranslateX(-200)
+        .setTranslateY(Math.random()*800);
+    c.rate = 1+Math.random()*3;
+    return c;
+};
+em.update = function(c) {
+    if(c) {
+        c.setTranslateX(c.getTranslateX()+c.rate);
+        if(c.getTranslateX() > 1000) {
+            c.setTranslateX(-200);
+        }
+    }
+}
+
+g.add(em);
+var anim1 = new CallbackAnim();
+anim1.callback = em.process;
+anim1.start();
+runner.addAnim(anim1);
+
+var bubbles = new ParticleEmitter();
+bubbles.rate = 30;
+bubbles.max = 15;
+bubbles.create = function() {
+    var bubble = new Circle().set(
+        Math.random()*600
+        ,1100
+        ,3+Math.random()*10)
+    .setFill("rgba(255,255,255,0.5)")
+    .setStroke("white")
+    .setStrokeWidth(3);
+    bubble.dx = Math.random();
+    return bubble;
+};
+bubbles.update = function(p) {
+    p.setY(p.getY()-3);
+    p.setX(p.getX()+p.dx);
+    if(p.getY()<-20) {
+        p.setX(Math.random()*600);
+        p.setY(1100);
+    }
+};
+
+g.add(bubbles);
+var anim2 = new CallbackAnim();
+anim2.callback = bubbles.process;
+runner.addAnim(anim2);
+anim2.start();
+runner.start();
+</script>
+</body>
+</html>
+
