@@ -1,0 +1,104 @@
+<html>
+<head>
+<meta name="viewport" content = "width = device-width; initial-scale=1; maximum-scale=1; user-scalable=no;" />
+<style type='text/css'>
+	canvas { border: 1px solid black; }
+</style>
+<script type="text/javascript" src="../amino.js"></script>
+<script type="text/javascript" src="../amino_shapes.js"></script>
+<link href="common.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+
+<ul><li><a href="basic.html">Prev</a></li><li><a href="three.html">Next</a></li></ul>
+
+<h1>Animation Tests</h1>
+
+<h3>click to start animation, on demand repaint</h3>
+<canvas id="test6a" width="200" height="100"></canvas>
+<script type="text/javascript">
+	(function() {
+		var engine = new Amino();
+		engine.autoPaint = false;
+		var can = engine.addCanvas("test6a");
+		var rect = new Rect().set(30,30,50,50).setFill("purple");
+		var anim = new PropAnim(rect,"x",30,130,1.5);
+		engine.addAnim(anim);
+		can.onClick(rect,function(e) {
+			anim.toggle();
+		});
+		can.add(rect);
+		engine.start();
+	})();
+</script>
+
+<h3>click to start animation, auto repaint</h3>
+<canvas id="test6b" width="200" height="100"></canvas>
+<script type="text/javascript">
+	(function() {
+		var engine = new Amino();
+		engine.autoPaint = true;
+		var can = engine.addCanvas("test6b");
+		var rect = new Rect().set(30,30,50,50).setFill("purple");
+		var anim = new PropAnim(rect,"x",30,130,1.5);
+		engine.addAnim(anim);
+		can.onClick(rect,function(e) {
+			anim.toggle();
+		});
+		can.add(rect);
+		engine.start();
+	})();
+</script>
+
+
+
+<h3>div animation</h3>
+<canvas id="test7" width="200" height="100"></canvas>
+<div id="testdiv7" style="position:absolute; border: 1px solid black; left:0px; ">test div 7</div>
+<script type="text/javascript">
+	(function() {
+		var engine = new Amino();
+		engine.autoPaint = true;
+		var can = engine.addCanvas("test7");
+		var anim = new PropAnim(document.getElementById("testdiv7"),"left",0,200,5);
+		engine.addAnim(anim);
+		var rect = new Rect().set(30,30,50,50).setFill("purple");
+		can.add(rect);
+		can.onClick(rect,function(e) {
+			anim.toggle();
+		});
+		engine.start();
+	})();
+</script>
+
+
+
+<h3>custom animation using callbacks</h3>
+<canvas id="test8" width="200" height="100"></canvas>
+<script type="text/javascript">
+	(function() {
+		var engine = new Amino();
+		engine.autoPaint = true;
+		var can = engine.addCanvas("test8");
+		
+		var rect = new Rect().set(30,30,50,50).setFill("purple");
+		can.add(rect);
+		
+		var anim = new CallbackAnim()
+		anim.callback = function(time,starttime) {
+		    var x = rect.getX() + 1.2;
+		    if(x > 100) x = 0;
+		    rect.setX(x);    
+		}
+		engine.addAnim(anim);
+		engine.start();
+	})();
+</script>
+
+
+
+
+
+</body>
+</html>
+

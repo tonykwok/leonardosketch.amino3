@@ -1,0 +1,74 @@
+<html>
+<head>
+<title>Amino Repaint Tests</title>
+<script type="text/javascript" src="../amino.js"></script>
+<script type="text/javascript" src="../amino_shapes.js"></script>
+<link href="common.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+
+<ul><li><a href="shapes.html">Prev</a></li><li><a href="#">Next</a></li></ul>
+
+<h1>Groups</h1>
+<h3>Two shapes in a group, translated</h3>
+<canvas id="testa" width="200" height="100"></canvas>
+<script type="text/javascript">
+	(function() {
+		var engine = new Amino();
+		var can = engine.addCanvas("testa");
+		var rect1 = new Rect().set(0,0,50,50).setFill("red");
+		var rect2 = new Rect().set(100,0,50,50).setFill("blue");
+		var group = new Group().add(rect1).add(rect2);
+		group.setX(30);
+		can.add(group);
+        //can.add(rect);
+		engine.start();
+	})();
+</script>
+
+<h3>Two shapes in a group, inside a rotated transform</h3>
+<canvas id="testb" width="200" height="100"></canvas>
+<script type="text/javascript">
+	(function() {
+		var engine = new Amino();
+		var can = engine.addCanvas("testb");
+		var rect1 = new Rect().set(0,0,50,50).setFill("red");
+		var rect2 = new Rect().set(100,0,50,50).setFill("blue");
+		var group = new Group().add(rect1).add(rect2);
+		var trans = new Transform(group)
+		    .setRotate(30);
+		can.add(trans);
+        //can.add(rect);
+		engine.start();
+	})();
+</script>
+
+
+
+<h1>Transforms</h1>
+
+<h3>rotating transform</h3>
+<canvas id="test1" width="200" height="100"></canvas>
+<script type="text/javascript">
+	(function() {
+		var engine = new Amino();
+		engine.autoPaint = true;
+		var can = engine.addCanvas("test1");
+		var rect = new Rect().set(0,0,50,50).setFill("red");
+		var trans = new Transform(rect)
+			.setTranslateX(25)
+			.setTranslateY(25)
+			.setAnchorX(25)
+			.setAnchorY(25)
+			.setRotate(30);
+		var anim = new PropAnim(trans,"rotate",0,360,3);
+		engine.addAnim(anim);
+		anim.toggle();
+		can.add(trans);
+        //can.add(rect);
+		engine.start();
+	})();
+</script>
+
+</body>
+</html>
