@@ -26,6 +26,7 @@
         </fileset>
     </concat>
     <copy file="dist/amino.js" tofile="dist/amino-${version}-b${build.number}.js"/>
+    
     <copy todir="dist">
         <fileset dir="src/">
             <exclude name="amino*.js"/>
