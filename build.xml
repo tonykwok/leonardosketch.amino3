@@ -34,6 +34,17 @@
     </copy>
 </target>
 
+
+<target name="doc-js">
+    <mkdir dir="dist/doc"/>
+    <!--
+    <exec command="ruby tools/joshdoc.rb dist/amino.js dist/doc/docs.html"/>
+    -->
+<!--    <copy file="tools/doc.css" todir="dist/doc"/>
+    <copy file="tools/background.png" todir="dist/doc"/>
+    -->
+</target>
+
 <target name="clean">
     <delete dir="dist"/>
 </target>
