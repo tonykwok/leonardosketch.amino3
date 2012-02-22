@@ -112,10 +112,6 @@ Function.prototype.extend = function(superclass, proto) {
 You generally only need one of these per page.
 @end
 */
-
-
-
-
 function Amino() {
 	this.canvases = [];
 	this.anims = [];
@@ -123,6 +119,7 @@ function Amino() {
 	this.autoPaint = false;
 }
 
+//@function addCanvas adds a new canvas to the engine. Pass in the string id of a canvas element in the page.
 Amino.prototype.addCanvas = function(id) {
 	var canvasElement = document.getElementById(id);
 	var canvas = new Canvas(this,canvasElement);
@@ -130,6 +127,7 @@ Amino.prototype.addCanvas = function(id) {
 	return canvas;
 }
 
+//@function addAnim adds a new animation to then engine.
 Amino.prototype.addAnim = function(anim) {
 	anim.engine = this;
 	this.anims.push(anim);
@@ -342,6 +340,7 @@ Canvas.prototype.setBackground = function(bgfill) {
 Canvas.prototype.setTransparent = function(transparent) {
     this.transparent = transparent;
 }
+
 //@function add Adds a node to this canvas.
 Canvas.prototype.add = function(node) {
 	this.nodes.push(node);
