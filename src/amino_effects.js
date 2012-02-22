@@ -128,7 +128,7 @@ function SaturationNode(n) {
     };
     return true;
 }
-SaturationNode.extend(Node);
+SaturationNode.extend(AminoNode);
 
 
 
@@ -137,7 +137,7 @@ SaturationNode.extend(Node);
 @category effect
 */
 function BackgroundSaturationNode(n) {
-    Node.call(this);
+    AminoNode.call(this);
 	this.node = n;
     this.node.setParent(this);
     this.buf1 = null;
@@ -328,7 +328,7 @@ function BackgroundSaturationNode(n) {
     };
     return true;
 }
-BackgroundSaturationNode.extend(Node);
+BackgroundSaturationNode.extend(AminoNode);
 
 /*
 @class BlurNode A parent node which blurs its child.
@@ -337,7 +337,7 @@ BackgroundSaturationNode.extend(Node);
 function BlurNode(n) {
 	this.node = n;
 	console.log("n = " + n);
-    Node.call(this);
+    AminoNode.call(this);
     if(n) n.setParent(this);
     this.buf1 = null;
     this.buf2 = null;
@@ -440,7 +440,7 @@ function BlurNode(n) {
     };
     return true;
 };
-BlurNode.extend(Node);
+BlurNode.extend(AminoNode);
 
 /*
 @class ShadowNode A parent node which draws a shadow under its child. Uses a buffer internally.
@@ -633,7 +633,7 @@ function Buffer(w,h) {
 @category misc
 */
 function BufferNode(n) {
-	Node.call(this);
+	AminoNode.call(this);
 	this.node = n;
     this.node.setParent(this);
     this.buf = null;
@@ -659,7 +659,7 @@ function BufferNode(n) {
     };
     return true;
 };
-BufferNode.extend(Node);
+BufferNode.extend(AminoNode);
 
 
 
