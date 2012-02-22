@@ -46,7 +46,7 @@
     <delete dir="dist"/>
 </target>
 
-<target name="publish" depends="init, build-js">
+<target name="publish" depends="init, build-js, doc-js">
     <copy todir="${publish.dir}">
         <fileset dir="dist/">
         </fileset>
