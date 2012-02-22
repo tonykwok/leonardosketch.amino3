@@ -104,6 +104,20 @@ function Circle() {
 	this.x = 0;
 	this.y = 0;
 	this.radius = 10;
+	this.getX = function() {
+	    return this.x;
+	}
+	this.getY = function() {
+	    return this.y;
+	}
+	this.setX = function(x) {
+	    this.x = x;
+	    return this;
+	}
+	this.setY = function(y) {
+	    this.y = y;
+	    return this;
+	}
 	return this;
 }
 Circle.extend(AminoShape);

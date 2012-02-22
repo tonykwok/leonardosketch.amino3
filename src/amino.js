@@ -511,6 +511,7 @@ function Transform(n) {
     
     return true;
 }
+Transform.extend(AminoNode);
 
 Transform.prototype.setDirty = function() {
 	if(this.parent != null) {
