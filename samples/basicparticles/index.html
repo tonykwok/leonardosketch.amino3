@@ -39,15 +39,19 @@ canvas { border: 1px solid black; }
             r.y += r.vy;
             if(r.x > MAX_WIDTH) r.x = 0;
             if(r.y > MAX_HEIGHT) r.y = 0;
-        }/*
-        if(ADB.getAverageFPS()<MAX_FPS) {
-            ADB.debugLine("hit max particles at: " + g.children.length + " " + ADB.getAverageFPS());
-        }*/
+        }
         g.setDirty();
     };
     anim.start();
     runner.addAnim(anim);
     runner.start();
+    
+    
+    var data = "this is some\n text to read\n";
+    var regex = new RegExp("this(.*)text","m");
+    console.log("multi = " + regex.multiline);
+    console.log(regex.exec(data));
+
 </script>
 
 </body>

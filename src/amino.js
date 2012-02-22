@@ -1,3 +1,60 @@
+/*
+@overview Amino: JavaScript Scenegraph
+
+Amino is a scenegraph for drawing 2D graphics in JavaScript with the
+HTML 5 Canvas API. By creating a tree of nodes, you can draw shapes, text, images special effects; complete with transforms and animation.
+Amino takes care of all rendering, animation, and event handling
+so you can build *rich* interactive graphics with very little code.
+Using Amino is much more convenient than writing canvas code by hand.
+
+Here's a quick example:    
+
+    <canvas id="can" width="200" height="200"></canvas>
+    <script>
+    
+    //attach a runner to the canvas
+    var can = document.getElementById("can");
+    var runner = new Runner().setCanvas(can);
+    
+    //create a rect and a circle
+    var r = new Rect().set(0,0,50,50).setFill("green");
+    var c = new Circle().set(100,100,30).setFill("blue");
+    
+    //add the shapes to a group
+    var g = new Group().add(r).add(c);
+    
+    //make the rectangle go left and right every 5 seconds
+    var anim = new Anim(g,"x",0,150,5);
+    runner.addAnim(anim);
+    
+    //set the group as the root of the scenegraph, then start
+    runner.root = g;
+    runner.start();
+    
+    </script>
+
+A note on properties. Most objects have properties like `x` or `width`.
+Properties are accessed with getters.  For example, to access the `width`
+property on a rectangle, call `rect.getWidth()`. Properties are set 
+with setters. For example, to set the `width` property
+on a rectangle, call `rect.setWidth(100)`. Most functions, especially 
+property setters, are chainable. This means you
+can set a bunch of properties at once like this:
+
+    var c = new Rect()
+        .setX(50)
+        .setY(50)
+        .setWidth(100)
+        .setHeight(200)
+        .setFill("green")
+        .setStrokeWidth(5)
+        .setStroke("black")
+        ;
+    
+@end
+*/
+
+
 (function() {
     var lastTime = 0;
     var vendors = ['ms', 'moz', 'webkit', 'o'];
@@ -50,6 +107,11 @@ Function.prototype.extend = function(superclass, proto) {
 
 
 
+/*
+@class Amino The engine that drives the whole system. 
+You generally only need one of these per page.
+@end
+*/
 
 
 
@@ -117,6 +179,11 @@ Amino.prototype.animationChanged = function() {
 	this.repaint();
 }
 
+/*
+@class Canvas represents a drawable area on the screen, usually
+a canvas tag.
+@end
+*/
 
 function Canvas(engine,domCanvas) {
 	this.engine = engine;
@@ -124,6 +191,8 @@ function Canvas(engine,domCanvas) {
 	this.nodes = [];
 	this.listeners = [];
 	this.mousePressed = false;
+	this.bgfill = "white";
+	this.transparent = false;
 	var self = this;
     attachEvent(domCanvas,'mousedown',function(e){
     	e.preventDefault();
@@ -247,8 +316,10 @@ Canvas.prototype.repaint = function() {
 	var ctx = this.domCanvas.getContext('2d');
 	this.width = this.domCanvas.width;
 	this.height = this.domCanvas.height;
-	ctx.fillStyle = "white";
-	ctx.fillRect(0,0,this.width,this.height);
+	ctx.fillStyle = this.bgfill;
+	if(!this.transparent) {
+	    ctx.fillRect(0,0,this.width,this.height);
+	}
 	
 	ctx.can = this;
 	ctx.engine = this.engine;
@@ -264,6 +335,14 @@ Canvas.prototype.repaint = function() {
 	this.dirty = false;
 	
 }
+
+Canvas.prototype.setBackground = function(bgfill) {
+    this.bgfill = bgfill;
+}
+Canvas.prototype.setTransparent = function(transparent) {
+    this.transparent = transparent;
+}
+//@function add Adds a node to this canvas.
 Canvas.prototype.add = function(node) {
 	this.nodes.push(node);
 	node.parent = this;
