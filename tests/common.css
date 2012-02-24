@@ -1,5 +1,6 @@
 ul li {
-    display: inline; padding: 0.2em; 
+    display: inline; 
+    padding: 0.2em; 
     border: 1px solid black; 
     background-color: #eee;
 }

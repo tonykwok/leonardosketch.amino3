@@ -703,9 +703,12 @@ function PropAnim(node,prop,startValue,end,duration) {
 	this.value = -1;
 	this.started = false;
 	this.playing = false;
-	this.loop = false;
+	this.loop = 0;
 	this.beforeCallback = null;
 	this.afterCallback = null;
+	this.loopcount = 0;
+	this.autoReverse = false;
+	this.forward = true;
 	return this;
 }
 
@@ -727,13 +730,26 @@ PropAnim.prototype.update = function() {
 		if(this.afterCallback) {
 		    this.afterCallback();
 		}
-		if(!this.loop) {
+		//don't loop
+		if(this.loop == 0 || this.loopcount == 0) {
 		    this.playing = false;
+		}
+		//loop forver
+		if(this.loop == -1) {
+		    //no nothing
+		}
+		//loop N times
+		if(this.loop > 0) {
+		    this.loopcount--;
+		}
+		if(this.autoReverse) {
+		    this.forward = !this.forward;
 		}
 		return;
 	}
 	
 	var t = (currentTime-this.startTime)/(this.duration*1000);
+	if(!this.forward) t = 1-t;
 	
 	var val = this.startValue + t*(this.end-this.startValue);
 	if(this.isdom) {
@@ -764,8 +780,89 @@ PropAnim.prototype.onAfter = function(afterCallback) {
     this.afterCallback = afterCallback;
     return this;
 }
+PropAnim.prototype.setLoop = function(loop) {
+    this.loop = loop;
+    this.loopcount = loop;
+    return this;
+}
+PropAnim.prototype.setAutoReverse = function(autoReverse) {
+    this.autoReverse = true;
+    return this;
+}
 
 
+function SerialAnim() {
+    this.anims = [];
+    this.animIndex = -1;
+}
+SerialAnim.prototype.add = function(anim) {
+    this.anims.push(anim);
+    return this;
+}
+SerialAnim.prototype.start = function() {
+	this.playing = true;
+	this.animIndex = 0;
+	this.anims[this.animIndex].start();
+    if(this.engine) {
+        this.engine.animationChanged();
+    }
+    return this;
+}
+SerialAnim.prototype.update = function() {
+	if(!this.playing) return;
+	if(!this.started) {
+		this.started = true;
+	}
+	
+	var anim = this.anims[this.animIndex];
+	anim.update();
+	if(!anim.playing) {
+	    this.animIndex++;
+	    if(this.animIndex >= this.anims.length) {
+	        console.log('serial anim done');
+	        this.playing = false;
+	    } else {
+	        this.anims[this.animIndex].start();
+	    }
+	}
+}
+
+
+function ParallelAnim() {
+    this.anims = [];
+}
+ParallelAnim.prototype.add = function(anim) {
+    this.anims.push(anim);
+    return this;
+}
+ParallelAnim.prototype.start = function() {
+	this.playing = true;
+	for(var i=0; i<this.anims.length; i++) {
+	    this.anims[i].start();
+	}
+    if(this.engine) {
+        this.engine.animationChanged();
+    }
+    return this;
+}
+ParallelAnim.prototype.update = function() {
+	if(!this.playing) return;
+	if(!this.started) {
+		this.started = true;
+	}
+
+	var stillPlaying = false;
+	for(var i=0; i<this.anims.length; i++) {
+	    this.anims[i].update();
+	    if(this.anims[i].playing) {
+	        stillPlaying = true;
+	    }
+	}
+	
+	if(!stillPlaying) {
+        this.playing = false;
+	}
+}
 
 function CallbackAnim() {
     this.started = false;
