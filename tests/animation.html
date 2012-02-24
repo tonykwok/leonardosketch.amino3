@@ -317,6 +317,31 @@ var a1 = new PropAnim(document.getElementById("testdiv8"),"left",0,200,5).setUse
 
 -->
 
+<h3>click once to start, and once to remove running animation</h3>
+<canvas id="test20" width="200" height="100"></canvas>
+<script type="text/javascript">
+	(function() {
+		var engine = new Amino();
+		engine.autoPaint = false;
+		var can = engine.addCanvas("test20");
+		var rect = new Rect().set(30,30,50,50).setFill("purple");
+		var anim = new PropAnim(rect,"x",30,130,1.5);
+		engine.addAnim(anim);
+		var anim2 = new PropAnim(rect,"x",30,130,1.5);
+		engine.addAnim(anim2);
+		var anim3 = new PropAnim(rect,"x",30,130,1.5);
+		engine.addAnim(anim3);
+		can.onClick(rect,function(e) {
+		        if(anim.playing) {
+		            engine.removeAnim(anim);
+		        } else {
+		            anim.start();
+		        }
+		});
+		can.add(rect);
+		engine.start();
+	})();
+</script>
 </body>
 </html>
 

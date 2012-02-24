@@ -131,6 +131,12 @@ Amino.prototype.addCanvas = function(id) {
 Amino.prototype.addAnim = function(anim) {
 	anim.engine = this;
 	this.anims.push(anim);
+	return this;
+}
+Amino.prototype.removeAnim = function(anim) {
+    var index = this.anims.indexOf(anim);
+    this.anims.splice(index,1);
+    return this;
 }
 
 Amino.prototype.start = function() {
