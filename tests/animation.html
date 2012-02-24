@@ -4,8 +4,7 @@
 <style type='text/css'>
 	canvas { border: 1px solid black; }
 </style>
-<script type="text/javascript" src="../amino.js"></script>
-<script type="text/javascript" src="../amino_shapes.js"></script>
+<script type="text/javascript" src="../dist/amino.js"></script>
 <link href="common.css" type="text/css" rel="stylesheet"/>
 </head>
 <body>
@@ -97,6 +96,33 @@
 
 
 
+<h3>Animation with 'ooBefore' and 'onAfter'. Sets fill to green before animating, to blue after.</h3>
+<canvas id="test9" width="200" height="100"></canvas>
+<script type="text/javascript">
+	(function() {
+		var engine = new Amino();
+		engine.autoPaint = true;
+		var can = engine.addCanvas("test9");
+		
+		var rect = new Rect().set(0,30,50,50).setFill("purple");
+		can.add(rect);
+		can.onClick(rect,function() {
+		        anim.start();
+		});
+		var anim = new PropAnim(rect,"x",0,100,2)
+            .onBefore(function() {
+                rect.setFill("green");
+                console.log("before was called");
+            })
+            .onAfter(function() {
+                rect.setFill("blue");
+                console.log("after was called");
+            })
+		;
+		engine.addAnim(anim);
+		engine.start();
+	})();
+</script>
 
 
 </body>

@@ -2,11 +2,7 @@
 <head>
 <meta name="viewport" content = "width = device-width; initial-scale=1; maximum-scale=1; user-scalable=no;" />
 
-<script type="text/javascript" src="../amino.js"></script>
-<script type="text/javascript" src="../Three.js"></script>
-<script type="text/javascript" src="../amino_three.js"></script>
-<script type="text/javascript" src="../amino_shapes.js"></script>
-<script type="text/javascript" src="../Dragger.js"></script>
+<script type="text/javascript" src="../dist/amino.js"></script>
 <link href="common.css" type="text/css" rel="stylesheet"/>
 </head>
 <body>
@@ -15,7 +11,7 @@
 
 <h3>Event Tests</h3>
 
-<!--
+
 <h3>click to start animation, on demand repaint, using click</h3>
 <canvas id="test1" width="200" height="100"></canvas>
 <script type="text/javascript">
@@ -73,30 +69,48 @@
 		engine.start();
 	})();
 </script>
--->
 
-<h3>click on rects to change their colors</h3>
+
+<h3>onRelease: click on rects to change their colors</h3>
 <canvas id="test4" width="200" height="100"></canvas>
 <script type="text/javascript">
-	(function() {
-		var engine = new Amino();
-		engine.autoPaint = false;
-		var canvas = engine.addCanvas("test4");
-		var rect1 = new Rect().set(30,30,50,50).setFill("red");
-		canvas.add(rect1);
-		var rect2 = new Rect().set(130,30,50,50).setFill("blue");
-		canvas.add(new Group().setX(30).add(rect2));
-		canvas.onRelease(rect1,function(e) {
-		        console.log("clicked on rect1");
-		        rect1.setFill("black");
-		});
-		canvas.onRelease(rect2,function(e) {
-		        console.log("clicked on rect2");
-		        rect2.setFill("black");
-		});
-		engine.start();
-	})();
+(function() {
+    var engine = new Amino();
+    engine.autoPaint = false;
+    var canvas = engine.addCanvas("test4");
+    var rect1 = new Rect().set(30,30,50,50).setFill("red");
+    canvas.add(rect1);
+    var rect2 = new Rect().set(130,30,50,50).setFill("blue");
+    canvas.add(new Group().setX(30).add(rect2));
+    canvas.onRelease(rect1,function(e) {
+        console.log("clicked on rect1");
+        rect1.setFill("black");
+    });
+    canvas.onRelease(rect2,function(e) {
+        console.log("clicked on rect2");
+        rect2.setFill("black");
+    });
+    engine.start();
+})();
 </script>
+
+<h3>totalDrag test</h3>
+<canvas id="test5" width="200" height="100"></canvas>
+<script type="text/javascript">
+(function() {
+    var engine = new Amino();
+    engine.autoPaint = false;
+    var canvas = engine.addCanvas("test5");
+    var rect1 = new Rect().set(30,30,50,50).setFill("red");
+    canvas.add(rect1);
+    canvas.onDrag(rect1, function(e) {
+        console.log("drag: " + e.totalX);
+        //rect1.setX(e.totalX);
+    });
+    engine.start();
+})();
+</script>
+
 
 </body>
 </html>

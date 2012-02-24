@@ -149,7 +149,6 @@ Amino.prototype.start = function() {
 }
 
 Amino.prototype.repaint = function() {
-	//console.log("REPAINT. canvas count = " + this.canvases.length);
 	
 	var animRunning = false;
 	for(var i=0; i<this.anims.length; i++) {
@@ -162,7 +161,6 @@ Amino.prototype.repaint = function() {
 		this.canvases[i].repaint();
 	}
 	
-	//console.log("still running. need to do another repaint");
 	if(animRunning && !this.autoPaint) {
 		var self = this;
 		var rp = function() {
@@ -197,11 +195,8 @@ function Canvas(engine,domCanvas) {
         var point = self.calcLocalXY(domCanvas,e);
         self.mousePressed = true;
         var node = self.findNode(point);
-    	//console.log("mouse down on the canvas at " + JSON.stringify(point) + "  on " + node.typename + " " + node.hashcode);
-    	//console.log("lenth = " + self.listeners.length);
     	for(var i=0; i<self.listeners.length; i++) {
     		var listener = self.listeners[i];
-    		//console.log("looking at " + listener.node.typename + " " + node.typename + " " + (listener.node.hashcode == node.hashcode));
     		if(listener.node === node) {
     		    if(listener.type == "press") {
     		        listener.fn({point:point,target:node});
@@ -216,11 +211,8 @@ function Canvas(engine,domCanvas) {
         var point = self.calcLocalXY(domCanvas,e);
         self.mousePressed = true;
         var node = self.findNode(point);
-    	//console.log("mouse down on the canvas at " + JSON.stringify(point) + "  on " + node.typename + " " + node.hashcode);
-    	//console.log("lenth = " + self.listeners.length);
     	for(var i=0; i<self.listeners.length; i++) {
     		var listener = self.listeners[i];
-    		//console.log("looking at " + listener.node.typename + " " + node.typename + " " + (listener.node.hashcode == node.hashcode));
     		if(listener.node === node) {
     		    if(listener.type == "drag") {
     		        listener.fn({point:point,target:node});
@@ -234,7 +226,6 @@ function Canvas(engine,domCanvas) {
         var point = self.calcLocalXY(domCanvas,e);
         self.mousePressed = false;
         var node = self.findNode(point);
-    	//console.log("mouse up on the canvas at " + JSON.stringify(point) + "  on " + node.typename);
     	for(var i=0; i<self.listeners.length; i++) {
     		var listener = self.listeners[i];
     		if(listener.node == node) {
@@ -273,29 +264,23 @@ function Canvas(engine,domCanvas) {
     	for(var i=this.nodes.length-1; i>=0; i--) {
     		var node = this.nodes[i];
     		if(node && node.isVisible() && node.contains(point)) {
-    		    console.log("returning: " + node.typename);
     			return node;
     		}
     		
     		if(node instanceof Group && node.isVisible()) {
     		    var r = this.searchGroup(node,point);
     		    if(r) {
-    		        console.log("returning: " + r.typename);
     		        return r;
     		    }
     		}
     	}
-	    console.log("returning: " + null);
     	return null;
     }
     
     this.searchGroup = function(group,point) {
-        console.log("searching: " + group.typename + " " + JSON.stringify(point));
         point = {x:point.x-group.getX(), y:point.y-group.getY() };
         for(var j=group.children.length-1; j>=0; j--) {
             var node = group.children[j];
-            console.log("  child = " + node.typename + " " + JSON.stringify(point));
-            console.log("    contains = " + node.contains(point));
             if(node && node.isVisible() && node.contains(point)) {
                 return node;
             }
@@ -310,7 +295,6 @@ function Canvas(engine,domCanvas) {
 
 
 Canvas.prototype.repaint = function() {
-	//console.log("repainting canvas '" + this.domCanvas.id + "' node count =  " + this.nodes.length);
 	var ctx = this.domCanvas.getContext('2d');
 	this.width = this.domCanvas.width;
 	this.height = this.domCanvas.height;
@@ -354,7 +338,6 @@ Canvas.prototype.onClick = function(node,fn) {
 	});
 }
 Canvas.prototype.onPress = function(node,fn) {
-    console.log('adding: ' + node.hashcode);
 	this.listeners.push({
 		type:'press'
 		,node:node
@@ -721,6 +704,8 @@ function PropAnim(node,prop,startValue,end,duration) {
 	this.started = false;
 	this.playing = false;
 	this.loop = false;
+	this.beforeCallback = null;
+	this.afterCallback = null;
 	return this;
 }
 
@@ -730,12 +715,18 @@ PropAnim.prototype.update = function() {
 		this.started = true;
 		this.value = this.startValue;
 		this.startTime = new Date().getTime();
+		if(this.beforeCallback) {
+		    this.beforeCallback();
+		}
 	}
 	
 	var currentTime = new Date().getTime();
 	var dur = currentTime-this.startTime;
 	if(dur > this.duration*1000) {
 		this.started = false;
+		if(this.afterCallback) {
+		    this.afterCallback();
+		}
 		if(!this.loop) {
 		    this.playing = false;
 		}
@@ -743,7 +734,6 @@ PropAnim.prototype.update = function() {
 	}
 	
 	var t = (currentTime-this.startTime)/(this.duration*1000);
-	//	console.log("t = " + t);
 	
 	var val = this.startValue + t*(this.end-this.startValue);
 	if(this.isdom) {
@@ -753,8 +743,6 @@ PropAnim.prototype.update = function() {
 	        +this.prop[0].toUpperCase()
 	        +this.prop.slice(1);
 		this.node[fun](val);
-		//this.node.setDirty();
-		//console.log("set the prop " + fun);
 	}
 }
 PropAnim.prototype.toggle = function() {
@@ -768,6 +756,15 @@ PropAnim.prototype.start = function() {
     }
     return this;
 }
+PropAnim.prototype.onBefore = function(beforeCallback) {
+    this.beforeCallback = beforeCallback;
+    return this;
+}
+PropAnim.prototype.onAfter = function(afterCallback) {
+    this.afterCallback = afterCallback;
+    return this;
+}
+
 
 
 function CallbackAnim() {
