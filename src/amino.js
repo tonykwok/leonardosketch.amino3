@@ -109,7 +109,13 @@ Function.prototype.extend = function(superclass, proto) {
 
 /*
 @class Amino The engine that drives the whole system. 
-You generally only need one of these per page.
+You generally only need one of these per page. It is
+the first thing you create. Attach canvases to it using
+addCanvas. ex:  
+
+var amino = new Amino(); 
+var canvas = amino.addCanvas('canvasid');
+
 @end
 */
 function Amino() {
@@ -128,18 +134,20 @@ Amino.prototype.addCanvas = function(id) {
 	return canvas;
 }
 
-//@function addAnim adds a new animation to then engine.
+//@function addAnim adds a new animation to then engine. Note that you must also start the animation as well.
 Amino.prototype.addAnim = function(anim) {
 	anim.engine = this;
 	this.anims.push(anim);
 	return this;
 }
+//@function removeAnim removes an animation from the engine.
 Amino.prototype.removeAnim = function(anim) {
     var index = this.anims.indexOf(anim);
     this.anims.splice(index,1);
     return this;
 }
 
+//@function start Starts the Amino engine. You must call this once or else nothing will be drawn on the screen.
 Amino.prototype.start = function() {
     var self = this;
     var rp = function() {
@@ -184,7 +192,8 @@ Amino.prototype.animationChanged = function() {
 
 /*
 @class Canvas represents a drawable area on the screen, usually
-a canvas tag.
+a canvas tag.  Create it using the Amino class by passing the
+ID of your canvas tag to amino.addClass(id);
 @end
 */
 
@@ -336,9 +345,11 @@ Canvas.prototype.repaint = function() {
 	
 }
 
+//@function setBackground set the background color of the canvas
 Canvas.prototype.setBackground = function(bgfill) {
     this.bgfill = bgfill;
 }
+//@function setTransparent set if the canvas should draw it's background or let it be transparent
 Canvas.prototype.setTransparent = function(transparent) {
     this.transparent = transparent;
 }
@@ -349,6 +360,7 @@ Canvas.prototype.add = function(node) {
 	node.parent = this;
 }
 
+//@function on  adds an event handler of the specified typ
 Canvas.prototype.on = function(eventtype, node, fn) {
     this.listeners.push({
         type:eventtype,
@@ -356,6 +368,7 @@ Canvas.prototype.on = function(eventtype, node, fn) {
         fn:fn,
     });
 }
+//@function onClick adds an event handler to be called when the user clicks on the specified node. Works with both mouse and touch events.
 Canvas.prototype.onClick = function(node,fn) {
 	this.listeners.push({
 		type:'click'
@@ -363,6 +376,8 @@ Canvas.prototype.onClick = function(node,fn) {
 		,fn:fn
 	});
 }
+
+//@function onPress adds an event handler to be called when the user presses on the specified node. Works with both mouse and touch events.
 Canvas.prototype.onPress = function(node,fn) {
 	this.listeners.push({
 		type:'press'
@@ -370,6 +385,7 @@ Canvas.prototype.onPress = function(node,fn) {
 		,fn:fn
 	});
 }
+//@function onRelease adds an event handler to be called when the user presses and then releases on the specified node. Works with both mouse and touch events.
 Canvas.prototype.onRelease = function(node,fn) {
 	this.listeners.push({
 		type:'release'
@@ -377,6 +393,7 @@ Canvas.prototype.onRelease = function(node,fn) {
 		,fn:fn
 	});
 }
+//@function onDrag adds an event handler to be called when the user drags on the specified node. Works with both mouse and touch events.
 Canvas.prototype.onDrag = function(node,fn) {
 	this.listeners.push({
 		type:'drag'
@@ -384,6 +401,7 @@ Canvas.prototype.onDrag = function(node,fn) {
 		,fn:fn
 	});
 }
+//@function onMomentumDrag adds an event handler to be called when the user drags on the specified node. Works with both mouse and touch events. Will apply momentum so that the drag continues after the user has released their mouse/finger.
 Canvas.prototype.onMomentumDrag = function(node,fn) {
 	this.listeners.push({
 		type:'momentumdrag'
@@ -399,9 +417,11 @@ Canvas.prototype.setDirty = function() {
 		}
 	}
 }
+//@function getWidth Returns the width of the canvas in pixels
 Canvas.prototype.getWidth = function() {
     return this.domCanvas.width;
 }
+//@function getHeight Returns the height of the canvas in pixels
 Canvas.prototype.getHeight = function() {
     return this.domCanvas.height;
 }
@@ -410,21 +430,28 @@ Canvas.prototype.getHeight = function() {
 
 function AminoNode() {
     var self = this;
-	this.parent = null;
 	this.typename = "AminoNode";
 	this.hashcode = Math.random();
+	
+	this.parent = null;
 	this.setParent = function(parent) {
 	    this.parent = parent;
 	    return this;
 	}
+	this.getParent = function() {
+	    return this.parent;
+	}
+	
 	this.visible = true;
 	this.setVisible = function(visible) {
 	    this.visible = visible;
+	    this.setDirty();
 	    return this;
 	}
 	this.isVisible = function() {
 	    return this.visible;
 	}
+	
 	this.setDirty = function() {
         if(self.parent != null) {
             self.parent.setDirty();
