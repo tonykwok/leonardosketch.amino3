@@ -57,6 +57,7 @@ function Text() {
     AminoShape.call(this);
 	this.x = 0;
 	this.y = 0;
+	this.font = "12pt sans-serif";
 	
 	this.setX = function(x) {
 	    this.x = x;
@@ -93,7 +94,7 @@ Text.prototype.setFont = function(font) {
 }
 Text.prototype.fillShape = function(g) {
 	g.fillStyle = this.fill;
-	g.font = "12pt sans-serif";
+	g.font = this.font;
 	g.fillText(this.text,this.x,this.y);
 }
 Text.prototype.contains = function(pt) {
