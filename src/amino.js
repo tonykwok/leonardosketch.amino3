@@ -305,7 +305,9 @@ Canvas.prototype.repaint = function() {
 	this.width = this.domCanvas.width;
 	this.height = this.domCanvas.height;
 	ctx.fillStyle = this.bgfill;
-	if(!this.transparent) {
+	if(this.transparent) {
+	    ctx.clearRect(0,0,this.width,this.height);
+	} else {
 	    ctx.fillRect(0,0,this.width,this.height);
 	}
 	
@@ -379,7 +381,12 @@ Canvas.prototype.setDirty = function() {
 		}
 	}
 }
-
+Canvas.prototype.getWidth = function() {
+    return this.domCanvas.width;
+}
+Canvas.prototype.getHeight = function() {
+    return this.domCanvas.height;
+}
 
 
 
@@ -414,7 +421,7 @@ function AminoShape() {
 	this.typename = "AminoShape";
 	this.fill = "gray";
 	this.stroke = "black";
-	this.strokeWidth = 1;
+	this.strokeWidth = 0;
 	this.setFill = function(fill) {
 	    self.fill = fill;
 	    self.setDirty();
@@ -427,6 +434,15 @@ function AminoShape() {
             ctx.fillStyle = self.fill;
         }
         self.fillShape(ctx);
+        if(self.strokeWidth > 0) {
+            if(self.stroke.generate) {
+                ctx.strokeStyle = self.stroke.generate(ctx);
+            } else {
+                ctx.strokeStyle = self.stroke;
+            }
+            ctx.lineWidth = self.strokeWidth;
+            self.strokeShape(ctx);
+        }
     }
 }
 AminoShape.extend(AminoNode);

@@ -1,0 +1,587 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Amino Java/JavaScript Scene Graph</title>
+        <link rel="stylesheet" href="resources/ChunkFive-fontfacekit/stylesheet.css" type="text/css" charset="utf-8">
+        <link rel="stylesheet" href="resources/League-Gothic-fontfacekit/stylesheet.css" type="text/css" charset="utf-8">
+        <link href="main.css" type="text/css" rel="stylesheet"/>
+
+        <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=no;"/>
+        <script language="JavaScript" src="../dist/amino.js"></script>
+    </head>
+    <body>
+
+
+<div id="masthead">
+<canvas id="can" width="200" height="150"></canvas>
+<h1>Amino</h1>
+<h2>Java &amp; JavaScript Scenegraph</h2>
+</div>
+
+
+<ul id="nav">
+<li><a href="#overview">Overview</a></li>
+<!--<li>API</li>-->
+<li><a href="#tutorial">Tutorial</a></li>
+<li><a href="#code">Code &amp; Docs</a></li>
+<li><a href="#galleryanchor">Gallery</a></li>
+<li><a href="#contribute">Contribute</a></li>
+</ul>
+
+
+
+
+<script language="JavaScript">
+var amino = new Amino();
+
+function foo() {
+    var can = amino.addCanvas('can');
+    function Connector(r1,r2) {
+        this.r1 = r1;
+        this.r2 = r2;
+        this.paint = function(g) {
+            g.strokeStyle = "black";
+            g.lineWidth = 3;
+            g.beginPath();
+            g.moveTo(this.r1.x,this.r1.y);
+            g.lineTo(this.r2.x,this.r2.y);
+            g.stroke();
+        };
+        return true;
+    };
+    Connector.extend(AminoNode);
+
+    var w = can.getWidth();
+    var h = can.getHeight();
+    var pad = 10;
+    var o = 60;
+
+    var g = new Group();
+    var lines = new Group();
+    var cx = w/2;
+    var cy = h/2;
+
+    var x = cx;
+    var y = cy;
+
+    var colors = ["#ceb25c","#ffe5c2","#cd833b","#cc9966"/*,"#001722"*/];
+
+    var dur = 10;
+    var len = 10;
+    for(var i=0; i<len; i++) {
+        var c = new Circle()
+            .set(x,y,10)
+            //.setFill(colors[Math.floor(Math.random()*4)])
+            .setFill("#ceb25c")
+            .setStroke("black")
+            .setStrokeWidth(5);
+        g.add(c);
+        var x2 = cx + (o-Math.random()*o*2);
+        var y2 = cy + (o-Math.random()*o*2);
+        if(x2 > w-pad) {x2-=w; x2+=pad*2;}
+        if(y2 > h-pad) {y2-=h; y2+=pad*2;}
+        
+        //if last
+        if(i == len-1) {
+            var first = g.getChild(0);
+            x2 = first.getX();
+            y2 = first.getY();
+        }
+        amino.addAnim(new PropAnim(c,"x",x+0, x2, dur)
+            .setLoop(-1)
+            .start()
+            //            .setAutoReverse(false)
+            //.setTween(EASE_OUT)
+        );
+        amino.addAnim(new PropAnim(c,"y",y+0, y2, dur)
+            .setLoop(-1)
+            .start()
+            //            .setAutoReverse(false)
+            //.setTween(EASE_OUT)
+        );
+        
+        x = x2;
+        y = y2;
+
+        if (i>0) {
+            lines.add(new Connector(g.getChild(i-1),g.getChild(i)));
+        }
+        //if last
+        
+        if(i == len-1) {
+            lines.add(new Connector(g.getChild(i),g.getChild(0)));
+        }
+    }
+
+    can.add(lines);
+    can.add(g);
+    //runner.setFPS(30);
+    //runner.DEBUG = false;
+    //can.setFill("black");
+    //runner.clearBackground = true;
+    //runner.transparentBackground = true;
+    //console.log('starting');
+    can.setTransparent(true);
+    amino.autoPaint = true;
+    amino.start();
+}
+foo();
+</script>
+
+<div id="content">
+
+
+
+<h3><a id="overview">Amino Overview</a></h3>
+
+<p>Amino is 100% open source (BSD) graphics library for Java and JavaScript. You
+can use Amino on the desktop in Java Swing applications or in a
+a browser using the HTML 5 Canvas tag. Amino makes it easy to
+create animated interactive graphics using a simple API.</p>
+
+<p>Amino supports:</p>
+<ul>
+    <li>Shapes: rect, circle, bezier paths, images</li>
+    <li>Pixel effects: blur, shadow, contrast/brightness/saturation</li>
+    <li>Animation: properties with easing, anim along a path</li>
+    <li>Group, buffering, and transforms</li>
+    <li>JavaScript: mixing with web content</li>
+    <li>Java: mixing with Swing content</li>
+</ul>
+
+<p>Amino is a 2D scene graph library. You declare shapes and animations, then let
+Amino do the hard work of drawing them with a constant frame rate. This
+example draws a red rectangle with a black border that moves back
+and forth across the screen.</p>
+
+<pre><code>var runner = new Runner();
+var r = new Rect().set(10,20,50,50)
+	.setFill("red).setStroke("black").setStrokeWidth(5);
+runner.setRoot(r);
+
+//animate r.x from 0 -> 300 over 5.5 seconds, and repeat
+runner.addAnim(new Anim(r, "x", 0, 300, 5.5).setLoop(true));
+
+//kick off the animation
+runner.start();
+</code></pre>
+
+<canvas id="main_demo" width="400" height="100"></canvas>
+<script type="text/javascript">
+function setup() {
+var can = amino.addCanvas('main_demo');
+can.setBackground("#f0f0f0");
+var rd = new Rect().set(10,20,50,50)
+	.setFill("red")
+	.setStroke("black")
+	.setStrokeWidth(6);
+can.add(rd);
+
+//animate r.x from 0 -> 300 over 5.5 seconds
+amino.addAnim(new PropAnim(rd, "x", 0, 300, 5.5)
+    .setLoop(-1) //repeat
+    .setAutoReverse(true).start() // auto reverse
+);
+};
+setup();
+
+</script>
+
+
+<h4>Browser / Device / OS Support</h4>
+<p>The Java version of Amino should work on any OS with Java 1.6 or higher.</p>
+
+<p>The JavaScript version of Amino should work in any browser with Canvas support,
+    which means the most recent version of all major browsers (including Internet Explorer 9!).
+    If there's
+    an older version of a browser that doesn't work, but does have canvas support,
+    please <a href="http://code.google.com/p/leonardosketch/issues/list">file a bug</a>
+    so we can fix Amino.</p>
+
+<p>Amino has also been tested on webOS 2.1,  iOS 4.3</p>
+
+
+
+<h3><a id="tutorial">Getting Started Tutorial</a></h3>
+
+<p>Amino is 100% open source (BSD) graphics library for Java and JavaScript. You
+can use Amino on the desktop in Java Swing applications or in a
+a browser using the HTML 5 Canvas tag. Amino makes it easy to
+create animated interactive graphics using a simple API.</p>
+
+<p>In this tutorial we will create a simple logo that slides
+in from the side when you click on the circle. Click it again to rotate the text. Here's
+what it looks like:</p>
+
+
+<canvas id="tutorialcanvas" width="400" height="200"></canvas>
+
+<script>
+function setup2() {
+    var can = amino.addCanvas('tutorialcanvas');
+    can.setBackground("white");
+    var all = new Group();
+    can.add(all);
+
+
+    //add circle w/ event listener
+    var cir = new Circle();
+    cir.set(300,150,30);
+    cir.setFill("red");
+    all.add(cir);
+    can.onPress(cir,function() {
+        if(cir.getFill() == "red") {
+            cir.setFill("blue");
+            var anim = new PropAnim(trans,"translateX",-250,100,1);
+            amino.addAnim(anim);
+            anim.start();
+            //anim.setTween(EASE_OUT);
+        } else {
+            cir.setFill("red");
+            var anim = new PropAnim(trans,"rotate",0,360,0.5);
+            //anim.setTween(EASE_OUT_OVER);
+            amino.addAnim(anim);
+            anim.start();
+        }
+    });
+
+
+    //add text inside trasnform
+    var text = new Text()
+        .setText("Amino!")
+        .setFill("#50c0e0")
+        .setY(100)
+        .setFont("bold 50pt Arial")
+        ;
+    var trans = new Transform(text);
+    trans.setTranslateX(100);
+    all.add(trans);
+};
+setup2();
+</script>
+
+
+<h4>Create a Canvas</h4>
+
+
+<p>
+    First you need to create an HTML Canvas element in your document. You need to
+    give the canvas a width and height, as well as an id.
+</p>
+
+
+<pre><code>&lt;html&gt;
+  &lt;body&gt;
+    &lt;canvas width="400" height="200" id="myCanvas"/&gt;
+  &lt;body&gt;
+&lt;html&gt;
+</code></pre>
+
+
+<p>Now import amino and create a new runner object attached to your canvas inside
+a script tag. Then set the background to white and add an empty group.</p>
+
+<pre><code>&lt;html&gt;
+&lt;head&gt;
+  <b>&ltscript language="JavaScript" src="amino.js"&gt;&lt;/script&gt;</b>
+&lt;/head&gt;
+  &lt;body&gt;
+    &lt;canvas width="400" height="200" id="myCanvas"/&gt;
+<b>
+  &lt;script&gt;
+    var r = new Runner();
+    r.setCanvas(document.getElementById("myCanvas"));
+    r.setBackground("white");
+
+    var all = new Group();
+    r.setRoot(all);
+    r.start();
+  &lt;/script&gt;
+</b>
+  &lt;body&gt;
+&lt;html&gt;
+</code></pre>
+
+
+<p><code>r.start()</code> in the code above will start the drawing process. With
+just the code above you should see an empty canvas with debugging stats
+in the lower right hand corner, like this:</p>
+
+<p><img src="tutorial1/snap1.png" width="400" height="200" class="screenshot"/></p>
+
+
+<h4>Add Shapes</h4>
+
+<p>Great. Amino has shape objects for Circle and Rect. You can also
+    create any shape you want using the PathNode. For this tutorial
+    let's add a circle.
+</p>
+
+<pre><code>var cir = new Circle();
+    cir.setX(300);
+    cir.setY(150);
+    cir.setRadius(30);
+    cir.setFill("red");
+
+    all.add(cir);
+</code></pre>
+
+<p>The code above creates a new circle then sets the x, y, radius, and fill
+    properties. All properties in Amino are set with setter methods. These
+    methods always return the object you are setting the property on, which
+    means you can very easily chain them. So instead of the above code,
+    which is quite verbose, you could do the following:</p>
+
+<pre><code>var cir = new Circle().setX(300).setY(300).setRadius(30).setFill("red");
+all.add(cir);</code></pre>
+
+
+
+<h4>Listen to Events</h4>
+
+<p>
+   Events are slightly different than you are used to. Rather than listening
+   to a shape or node on the screen you add a listener to the Runner and tell
+   it which objects you want to listen to. This lets you have multiple listeners
+   that listen to the same object, or have a listener that gets events from
+   every object in the scene (ex: get all key presses everywhere).
+</p>
+
+<pre><code>r.listen("MOUSE_PRESS",cir,function() {
+    if(cir.getFill() == "red") {
+        cir.setFill("blue");
+    } else {
+        cir.setFill("red");
+    }
+});</code></pre>
+
+<p>The event listener above listens for <code>MOUSE_PRESS</code> events
+    on just the circle.  When it is called back it will toggle
+    the color between red and blue.  Note that you don't have
+    to call any sort of refresh() or repaint() method. The scene
+    will automatically redraw whenever anything changes.
+</p>
+
+<h4>Geometric Transforms</h4>
+
+<p>Any node in Amino can be scaled, translated or rotated by putting
+    it inside of a Transform node.   Let's add a text node that is
+    translated 100px to the right and rotated by 15 degrees</p>
+<pre><code>
+var text = new Text()
+    .setText("Amino!")
+    .setFill("#50c0e0")
+    .setY(100)
+    .setFont("bold 50pt Arial");
+var trans = new Transform(text);
+trans.setTranslateX(100);
+trans.setRotate(15);
+all.add(trans);
+</code></pre>
+
+<p>Note that the <code>fill</code> and <code>font</code> properties
+    both use the standard CSS syntax. Fill can be either a hex string
+    or a named color like "blue". Font uses the same syntax as the CSS
+ <code>font:</code> property.</p>
+
+<p>Now you should have something that looks like this:</p>
+
+<p><img class="screenshot" src="tutorial1/snap2.png"/></p>
+
+ 
+<h4>Animation</h4>
+<p>Great. Now let's make it animated.  You can create animations in Amino
+using one of the following classes: PropAnim, PathAnim, or a manual frame callback.
+For basic animation you will use the PropAnim class. It animates a single property
+on a single node.  For example, you can rotate something by animating the <code>rotate</code>
+property of a <code>Transform</code> node.
+</p>
+
+<p>A property animation requires
+the target node, the name of the property you want to animate, start and
+end values, and a duration.  For example, if we want to rotate the transform
+above by 360 degrees over 15 seconds we would code the following.</p>
+
+<pre><code>var a = new PropAnim(trans,"rotate",0,360 15);
+r.addAnim(a);</code></pre>
+
+<p>Note that you have to add an animation to the runner in order for it
+to be active.</p>
+
+<p>Amino lets you have an unlimited number of animations active at once. You
+can also make them loop forever if you want.  For this demo lets make the
+text logo slide in from the side when you click the circle, then rotate around
+when you click it again. I've modified the circle listener like this:</p>
+
+<pre><code>r.listen("MOUSE_PRESS",cir,function() {
+    if(cir.getFill() == "red") {
+        cir.setFill("blue");
+        <b>var anim = new PropAnim(trans,"translateX",-250,100,1);
+        anim.setTween(EASE_OUT);
+        r.addAnim(anim);</b>
+    } else {
+        cir.setFill("red");
+        <b>var anim = new PropAnim(trans,"rotate",0,360,0.5);
+        anim.setTween(EASE_OUT_OVER);
+        r.addAnim(anim);</b>
+    }
+});
+</code></pre>
+
+<p>Notice that I added anim.setTween() calls. Normally an animation uses the LINEAR
+tween, meaning it will run at the same speed throughout the animation. However, you
+can use other tween settings to make the animation start off slow and speed up (EASE_IN),
+start fast then slow down as it ends (EASE_OUT), or even slightly overshoot and pop back
+to give it a more cartoon like feel (EASE_OUT_OVER). You can also create your own tweens.</p>
+
+
+<h4>Finishing up</h4>
+
+<p>The demo app is basically done. The only thing left is to turn off the debug with
+    <code>r.DEBUG = false;</code>.  Here is the full and complete code.
+</p>
+
+<pre><code>&lt;canvas id=&quot;tutorial&quot; width=&quot;400&quot; height=&quot;200&quot;&gt;&lt;/canvas&gt;
+
+&lt;script&gt;
+    var r = new Runner();
+    r.setCanvas(document.getElementById(&quot;tutorial&quot;));
+    r.setBackground(&quot;white&quot;);
+    var all = new Group();
+    r.setRoot(all);
+
+
+    //add circle w/ event listener
+    var cir = new Circle();
+    cir.set(300,150,30);
+    cir.setFill(&quot;red&quot;);
+    all.add(cir);
+    r.listen(&quot;MOUSE_PRESS&quot;,cir,function() {
+        if(cir.getFill() == &quot;red&quot;) {
+            cir.setFill(&quot;blue&quot;);
+            var anim = new PropAnim(trans,&quot;translateX&quot;,-250,100,1);
+            anim.setTween(EASE_OUT);
+            r.addAnim(anim);
+        } else {
+            cir.setFill(&quot;red&quot;);
+            var anim = new PropAnim(trans,&quot;rotate&quot;,0,360,0.5);
+            anim.setTween(EASE_OUT_OVER);
+            r.addAnim(anim);
+        }
+    });
+
+
+    //add text inside trasnform
+    var text = new Text()
+        .setText(&quot;Amino!&quot;)
+        .setFill(&quot;#50c0e0&quot;)
+        .setY(100)
+        .setFont(&quot;bold 50pt Arial&quot;);
+    var trans = new Transform(text);
+    trans.setTranslateX(100);
+    all.add(trans);
+    r.DEBUG = false;
+    r.start();
+&lt;/script&gt;
+</code></pre>
+
+<h4>Next Steps</h4>
+
+<p>First, you'll want to download a copy of Amino from <a href="download.jsp">here</a>.
+    This tutorial shows you how to use JavaScript, but the Java version is almost
+    identical.  Then check out the API references here: <a href="#">JavaScript API</a> and
+    <a href="#">Java API</a>.  Finally, you might want to join the <a href="contribute.jsp">developer
+    mailing list</a> or even contribute to the project.
+</p>
+
+<p>Amino is licensed under the BSD license. This means
+    you can use it for any purpose. If you improve Amino we ask
+    you to contribute your improvements back to the community,
+    but this is not required. Amino can be used in commercial software,
+    other open source projects, and for any other purpose.</p>
+
+<h3><a id="code">Download</a></h3>
+
+<p>Latest daily Java build [ <a href="http://goamino.org/download/daily/amino-1.0b1.jar">download jar</a>]
+ [ <a href="http://goamino.org/download/daily/javadoc/docs.html">API docs</a> ]</p>
+<p>Latest daily JavaScript build [ <a href="http://goamino.org/download/daily/amino-1.0b1.js">download .js</a> ]
+ [ <a href="http://goamino.org/download/daily/jsdoc/docs.html">API docs</a> ]</p>
+
+<!--<p>Stable 0.5 Java build [ <a href="#">download jar</a>]</p>
+<p>Stable 0.5 build [ <a href="#">download .js</a> ]</p>
+-->
+<p>Checkout / browse the source [ <a href="http://code.google.com/p/leonardosketch/source/checkout?repo=amino2x">Google Code repo</a> ]</p>
+
+<h3><a id="galleryanchor">Gallery</a></h3>
+
+<div id="gallery">
+    <p><a target="_blank" href="http://goamino.org/download/daily/gallery/blocks/"
+><img
+src="http://goamino.org/download/daily/gallery/blocks/thumbnail.png"
+><b>Block dragging game</b> for kids. This demonstrates using
+ images as draggable UI components.  This sort of game is great
+ on a tablet device because it uses only drag gestures.</a></p>
+
+<p><a target="_blank" href="http://goamino.org/download/daily/gallery/basicparticles/"
+><img src="http://goamino.org/download/daily/gallery/basicparticles/thumbnail.png"
+><b>Basic particle simulator.</b> Tests performance by creating particles
+until the framerate drops to 20 FPS.</a></p>
+
+<p><a target="_blank" href="http://goamino.org/download/daily/gallery/photoadjust/"
+><img src="http://goamino.org/download/daily/gallery/photoadjust/thumbnail.png"
+><b>Photo adjustments</b>: brightness, contrast, and saturation. This
+    sample demonstrates pixel effects done with background processing
+    to ensure the UI never slows down.</a></p>
+
+<p><a target="_blank" href="http://goamino.org/download/daily/gallery/planetrover/"
+><img src="http://goamino.org/download/daily/gallery/planetrover/thumbnail.png"
+          ><b>Planet Rover</b> : a simple sidescrolling game with multiple
+        levels and gravity physics. Demonstrates writing games
+        that run at 60fps in a modern browser.</a></p>
+
+<p><a target="_blank" href="http://goamino.org/download/daily/gallery/fish/"
+><img src="http://goamino.org/download/daily/gallery/fish/thumbnail.png"
+          ><b>Big Fish, Little Fish</b> : an animated poem with fish and bubbles. Shows
+        how an advanced ebook might look.</a></p>
+
+<p><a target="_blank" href="http://goamino.org/download/daily/gallery/linechart/"
+><img src="http://goamino.org/download/daily/gallery/linechart/thumbnail.png"
+          ><b>Line Chart</b> : a line chart component with an easy API. Demonstrates
+    how simple custom controls can be.</a></p>
+
+<p><a target="_blank" href="http://goamino.org/download/daily/gallery/touchclock/"
+><img src="http://goamino.org/download/daily/gallery/touchclock/thumbnail.png"
+          ><b>TouchClock</b> : full screen clock with three themes you can swipe
+        between. Designed for a tablet device like the TouchPad and iPad.</a></p>
+
+
+        
+        
+<h3><a id="contribute">Contribute</a></h3>
+
+<p>Google Code <a href="http://code.google.com/p/leonardosketch/">project site</a></p>
+<p>Request features and report bugs: <a href="http://code.google.com/p/leonardosketch/issues/list">Issues</a></p>
+<p><a href="http://code.google.com/p/leonardosketch/source/checkout?repo=amino2x">Browse</a> the source</p>
+<p>Join the developer <a href="http://groups.google.com/group/amino-dev">mailing list</a></p>
+        
+</div>
+
+<h3>Thank you for using Amino</h3>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-17798312-6']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+</body>
+</html>

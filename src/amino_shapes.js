@@ -25,6 +25,9 @@ function Rect() {
 	this.fillShape = function(ctx) {
 	    ctx.fillRect(self.x,self.y,self.w,self.h);
 	}
+	this.strokeShape = function(ctx) {
+	    ctx.strokeRect(self.x,self.y,self.w,self.h);
+	}
 	this.set = function(x,y,w,h) {
         this.x = x;
         this.y = y;
@@ -131,9 +134,21 @@ Circle.prototype.fillShape = function(ctx) {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2, true); 
     ctx.closePath();
-    ctx.save();
     ctx.fill();
-    ctx.restore();
+}
+Circle.prototype.strokeShape = function(ctx) {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2, true); 
+    ctx.closePath();
+    ctx.stroke();
+}
+Circle.prototype.contains = function(pt) {
+    if(pt.x >= this.x-this.radius && pt.x <= this.x + this.radius) {
+        if(pt.y >= this.y-this.radius && pt.y<=this.y + this.radius) {
+            return true;
+        }
+    }
+    return false;
 }
 
 
