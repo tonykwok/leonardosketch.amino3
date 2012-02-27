@@ -117,6 +117,7 @@ function Amino() {
 	this.anims = [];
 	this.timeout = 1000/30;
 	this.autoPaint = false;
+    this.isTouchEnabled = "ontouchend" in document;
 }
 
 //@function addCanvas adds a new canvas to the engine. Pass in the string id of a canvas element in the page.
@@ -196,54 +197,63 @@ function Canvas(engine,domCanvas) {
 	this.bgfill = "white";
 	this.transparent = false;
 	var self = this;
-    attachEvent(domCanvas,'mousedown',function(e){
-    	e.preventDefault();
-        var point = self.calcLocalXY(domCanvas,e);
-        self.mousePressed = true;
+	
+	this.processEvent = function(type,domCanvas,e,et) {
+	    e.preventDefault();
+        var point = self.calcLocalXY(domCanvas,et);
         var node = self.findNode(point);
     	for(var i=0; i<self.listeners.length; i++) {
     		var listener = self.listeners[i];
     		if(listener.node === node) {
-    		    if(listener.type == "press") {
+    		    if(listener.type == type) {
     		        listener.fn({point:point,target:node});
     		    }
     		}
     	}
+	}
+    attachEvent(domCanvas,'mousedown',function(e){
+        self.processEvent('press',domCanvas,e,e);
+        self.mousePressed = true;
     });
     
     attachEvent(domCanvas,'mousemove',function(e){
         if(!self.mousePressed) return;
-    	e.preventDefault();
-        var point = self.calcLocalXY(domCanvas,e);
+        self.processEvent('drag',domCanvas,e,e);
         self.mousePressed = true;
-        var node = self.findNode(point);
-    	for(var i=0; i<self.listeners.length; i++) {
-    		var listener = self.listeners[i];
-    		if(listener.node === node) {
-    		    if(listener.type == "drag") {
-    		        listener.fn({point:point,target:node});
-    		    }
-    		}
-    	}
     });
     
     attachEvent(domCanvas,'mouseup',function(e){
-    	e.preventDefault();
-        var point = self.calcLocalXY(domCanvas,e);
+        self.processEvent('release',domCanvas,e,e);
+        self.processEvent('click',domCanvas,e,e);
         self.mousePressed = false;
-        var node = self.findNode(point);
-    	for(var i=0; i<self.listeners.length; i++) {
-    		var listener = self.listeners[i];
-    		if(listener.node == node) {
-   				if(listener.type == "release") {
-    				listener.fn({point:point,target:node});
-    			}
-   				if(listener.type == "click") {
-    				listener.fn({point:point,target:node});
-    			}
-    		}
-    	}
     });
+
+    if(engine.isTouchEnabled) {    
+		domCanvas.addEventListener('touchstart', function(event) {
+            self.processEvent("press",domCanvas,event,event.touches[0]);
+            self.mousePressed = true;
+		});
+		domCanvas.addEventListener('touchmove', function(event) {
+            self.processEvent("drag",domCanvas,event,event.touches[0]);
+            /*
+			event.preventDefault();
+			var touch = event.touches[0];
+			var x = touch.pageX;
+			var y = touch.pageY;
+			//self.drag(x,y);
+			*/
+			//lastTouch = touch;
+            //window.alert("moved");
+		});
+		domCanvas.addEventListener('touchend', function(event) {
+            self.processEvent('release',domCanvas,event,event.changedTouches[0]);
+            self.processEvent('click',domCanvas,event,event.changedTouches[0]);
+            self.mousePressed = false;
+			//var touch = event.changedTouches[0];
+			//self.end(touch.pageX,touch.pageY);
+		});	
+	}
+    
     
     this.calcLocalXY = function(canvas,event) {
         var docX = -1;

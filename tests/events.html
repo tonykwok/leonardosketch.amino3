@@ -130,6 +130,22 @@
 })();
 </script>
 
+<h3>Test dragging</h3>
+<canvas id='tdrag' width='200' height='100'></canvas>
+<script type="text/javascript">
+(function(){
+    var engine = new Amino();
+    engine.autoPaint = true;
+    var canvas = engine.addCanvas("tdrag");
+    var rect1 = new Rect().set(30,30,50,50).setFill("red");
+    canvas.add(rect1);
+    canvas.onDrag(canvas, function(e) {
+        rect1.setX(rect1.getX()+1);
+    });
+    engine.start();
+})();
+</script>
+
 
 <h3>totalDrag test</h3>
 <canvas id="test5" width="200" height="100"></canvas>
