@@ -30,6 +30,24 @@
 		engine.start();
 	})();
 </script>
+<h3>click to start animation, on demand repaint, using on('click',rect,fun)</h3>
+<canvas id="test1a" width="200" height="100"></canvas>
+<script type="text/javascript">
+	(function() {
+		var engine = new Amino();
+		engine.autoPaint = false;
+		var canvas = engine.addCanvas("test1a");
+		var rect = new Rect().set(30,30,50,50).setFill("purple");
+		canvas.add(rect);
+		
+		var anim = new PropAnim(rect,"x",30,130,1.5);
+		engine.addAnim(anim);
+		canvas.on('click',rect,function(e) {
+			anim.toggle();
+		});
+		engine.start();
+	})();
+</script>
 
 <h3>click to start animation, on demand repaint, using press</h3>
 <canvas id="test2" width="200" height="100"></canvas>
@@ -93,6 +111,25 @@
     engine.start();
 })();
 </script>
+
+
+<h3>test press anywhere on the canvas</h3>
+<canvas id='anywhere' width='200' height='100'></canvas>
+<script type="text/javascript">
+(function(){
+    var engine = new Amino();
+    engine.autoPaint = false;
+    var canvas = engine.addCanvas("anywhere");
+    var rect1 = new Rect().set(30,30,50,50).setFill("red");
+    canvas.add(rect1);
+    canvas.onClick(canvas, function(e) {
+        console.log("clicked on the canvas ");
+        rect1.setFill("blue");
+    });
+    engine.start();
+})();
+</script>
+
 
 <h3>totalDrag test</h3>
 <canvas id="test5" width="200" height="100"></canvas>

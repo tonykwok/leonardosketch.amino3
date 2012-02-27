@@ -280,7 +280,7 @@ function Canvas(engine,domCanvas) {
     		    }
     		}
     	}
-    	return null;
+    	return this;
     }
     
     this.searchGroup = function(group,point) {
@@ -337,6 +337,14 @@ Canvas.prototype.setTransparent = function(transparent) {
 Canvas.prototype.add = function(node) {
 	this.nodes.push(node);
 	node.parent = this;
+}
+
+Canvas.prototype.on = function(eventtype, node, fn) {
+    this.listeners.push({
+        type:eventtype,
+        node:node,
+        fn:fn,
+    });
 }
 Canvas.prototype.onClick = function(node,fn) {
 	this.listeners.push({
