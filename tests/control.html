@@ -1,5 +1,6 @@
 <html>
 <head>
+<meta name="viewport" content = "width = device-width; initial-scale=1; maximum-scale=1; user-scalable=no;" />
 <title>Amino Repaint Tests</title>
 <script type="text/javascript" src="../dist/amino.js"></script>
 <link href="common.css" type="text/css" rel="stylesheet"/>
@@ -43,6 +44,7 @@ body {
 	(function() {
 		var engine = new Amino();
 		var can = engine.addCanvas("test3");
+		can.add(new Rect().set(10,10,40,40).setFill("red"));
 		can.setTransparent(true);
 		engine.start();
 	})();
