@@ -52,7 +52,12 @@ function parseData2(data) {
             
             var r = /@class\s*(\w+)\s*(.*)/m;
             var r2 = r.exec(cls);
-            currentClass = {name:r2[1],description:cls, functions:[], properties:[],};
+            currentClass = {
+                name:r2[1],
+                description:cls, 
+                functions:[], 
+                properties:[],
+            };
             docs.classes.push(currentClass);
         }
         
