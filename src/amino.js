@@ -2,7 +2,8 @@
 @overview Amino: JavaScript Scenegraph
 
 Amino is a scenegraph for drawing 2D graphics in JavaScript with the
-HTML 5 Canvas API. By creating a tree of nodes, you can draw shapes, text, images special effects; complete with transforms and animation.
+HTML 5 Canvas API. By creating a tree of nodes, you can draw shapes,
+text, images special effects; complete with transforms and animation.
 Amino takes care of all rendering, animation, and event handling
 so you can build *rich* interactive graphics with very little code.
 Using Amino is much more convenient than writing canvas code by hand.
@@ -126,7 +127,7 @@ function Amino() {
     this.isTouchEnabled = "ontouchend" in document;
 }
 
-//@function addCanvas adds a new canvas to the engine. Pass in the string id of a canvas element in the page.
+//@function addCanvas(id) adds a new canvas to the engine. Pass in the string id of a canvas element in the page.
 Amino.prototype.addCanvas = function(id) {
 	var canvasElement = document.getElementById(id);
 	var canvas = new Canvas(this,canvasElement);
@@ -134,20 +135,20 @@ Amino.prototype.addCanvas = function(id) {
 	return canvas;
 }
 
-//@function addAnim adds a new animation to then engine. Note that you must also start the animation as well.
+//@function addAnim(anim) adds a new animation to then engine. Note that you must also start the animation as well.
 Amino.prototype.addAnim = function(anim) {
 	anim.engine = this;
 	this.anims.push(anim);
 	return this;
 }
-//@function removeAnim removes an animation from the engine.
+//@function removeAnim(anim) removes an animation from the engine.
 Amino.prototype.removeAnim = function(anim) {
     var index = this.anims.indexOf(anim);
     this.anims.splice(index,1);
     return this;
 }
 
-//@function start Starts the Amino engine. You must call this once or else nothing will be drawn on the screen.
+//@function start() Starts the Amino engine. You must call this once or else nothing will be drawn on the screen.
 Amino.prototype.start = function() {
     var self = this;
     var rp = function() {
@@ -345,22 +346,22 @@ Canvas.prototype.repaint = function() {
 	
 }
 
-//@function setBackground set the background color of the canvas
+//@function setBackground(bgfill) set the background color of the canvas
 Canvas.prototype.setBackground = function(bgfill) {
     this.bgfill = bgfill;
 }
-//@function setTransparent set if the canvas should draw it's background or let it be transparent
+//@function setTransparent(trans) set if the canvas should draw it's background or let it be transparent
 Canvas.prototype.setTransparent = function(transparent) {
     this.transparent = transparent;
 }
 
-//@function add Adds a node to this canvas.
+//@function add(node) Adds a node to this canvas.
 Canvas.prototype.add = function(node) {
 	this.nodes.push(node);
 	node.parent = this;
 }
 
-//@function on  adds an event handler of the specified typ
+//@function on(type,node,fn)  adds an event handler of the specified type. ex: canvas.on('click',rect,function(){});
 Canvas.prototype.on = function(eventtype, node, fn) {
     this.listeners.push({
         type:eventtype,
@@ -368,7 +369,7 @@ Canvas.prototype.on = function(eventtype, node, fn) {
         fn:fn,
     });
 }
-//@function onClick adds an event handler to be called when the user clicks on the specified node. Works with both mouse and touch events.
+//@function onClick(node,function) adds an event handler to be called when the user clicks on the specified node. Works with both mouse and touch events.
 Canvas.prototype.onClick = function(node,fn) {
 	this.listeners.push({
 		type:'click'
@@ -377,7 +378,7 @@ Canvas.prototype.onClick = function(node,fn) {
 	});
 }
 
-//@function onPress adds an event handler to be called when the user presses on the specified node. Works with both mouse and touch events.
+//@function onPress(node,function) adds an event handler to be called when the user presses on the specified node. Works with both mouse and touch events.
 Canvas.prototype.onPress = function(node,fn) {
 	this.listeners.push({
 		type:'press'
@@ -385,7 +386,7 @@ Canvas.prototype.onPress = function(node,fn) {
 		,fn:fn
 	});
 }
-//@function onRelease adds an event handler to be called when the user presses and then releases on the specified node. Works with both mouse and touch events.
+//@function onRelease(node,function) adds an event handler to be called when the user presses and then releases on the specified node. Works with both mouse and touch events.
 Canvas.prototype.onRelease = function(node,fn) {
 	this.listeners.push({
 		type:'release'
@@ -393,7 +394,7 @@ Canvas.prototype.onRelease = function(node,fn) {
 		,fn:fn
 	});
 }
-//@function onDrag adds an event handler to be called when the user drags on the specified node. Works with both mouse and touch events.
+//@function onDrag(node,function) adds an event handler to be called when the user drags on the specified node. Works with both mouse and touch events.
 Canvas.prototype.onDrag = function(node,fn) {
 	this.listeners.push({
 		type:'drag'
@@ -401,7 +402,7 @@ Canvas.prototype.onDrag = function(node,fn) {
 		,fn:fn
 	});
 }
-//@function onMomentumDrag adds an event handler to be called when the user drags on the specified node. Works with both mouse and touch events. Will apply momentum so that the drag continues after the user has released their mouse/finger.
+//@function onMomentumDrag(node,function) adds an event handler to be called when the user drags on the specified node. Works with both mouse and touch events. Will apply momentum so that the drag continues after the user has released their mouse/finger.
 Canvas.prototype.onMomentumDrag = function(node,fn) {
 	this.listeners.push({
 		type:'momentumdrag'
@@ -417,22 +418,26 @@ Canvas.prototype.setDirty = function() {
 		}
 	}
 }
-//@function getWidth Returns the width of the canvas in pixels
+//@function getWidth() Returns the width of the canvas in pixels
 Canvas.prototype.getWidth = function() {
     return this.domCanvas.width;
 }
-//@function getHeight Returns the height of the canvas in pixels
+//@function getHeight() Returns the height of the canvas in pixels
 Canvas.prototype.getHeight = function() {
     return this.domCanvas.height;
 }
 
 
-
+/*
+@class AminoNode the base class for all nodes
+@end
+*/
 function AminoNode() {
     var self = this;
 	this.typename = "AminoNode";
 	this.hashcode = Math.random();
 	
+	//@property parent the parent of this node. Might be null if the node has not been added to the scene
 	this.parent = null;
 	this.setParent = function(parent) {
 	    this.parent = parent;
@@ -442,6 +447,7 @@ function AminoNode() {
 	    return this.parent;
 	}
 	
+	//@property visible Controls visibility of this node. Note: non-visible nodes cannot receive input events.
 	this.visible = true;
 	this.setVisible = function(visible) {
 	    this.visible = visible;
@@ -452,6 +458,7 @@ function AminoNode() {
 	    return this.visible;
 	}
 	
+	//@function setDirty() marks this node as being dirty
 	this.setDirty = function() {
         if(self.parent != null) {
             self.parent.setDirty();
@@ -459,7 +466,11 @@ function AminoNode() {
     }
 }
 
-
+/*
+@class AminoShape
+The base class for all shape nodes. Shapes all have fills and strokes.
+@end
+*/
 function AminoShape() {
     AminoNode.call(this);
 	var self = this;
@@ -467,6 +478,8 @@ function AminoShape() {
 	this.fill = "gray";
 	this.stroke = "black";
 	this.strokeWidth = 0;
+	
+	//@property fill  The fill color of this shape. This can be a hex string like "#ff0000" or a color name like "red" or a complex fill such as a gradient.
 	this.setFill = function(fill) {
 	    self.fill = fill;
 	    self.setDirty();
@@ -495,6 +508,8 @@ AminoShape.extend(AminoNode);
 AminoShape.prototype.getFill = function() {
 	return this.fill;
 }
+
+//@property  stroke The stroke color of this shape. This can be a hex value or color name, both as strings. ex: setStroke("#000000") or setStroke("black");
 AminoShape.prototype.setStroke = function(stroke) {
 	this.stroke = stroke;
 	this.setDirty();
@@ -503,6 +518,8 @@ AminoShape.prototype.setStroke = function(stroke) {
 AminoShape.prototype.getStroke = function() {
     return this.stroke;
 }
+
+//@property strokeWidth The current stroke width of this shapestroke. Must be a positive number or 0. If zero then the shape will not be stroked.
 AminoShape.prototype.setStrokeWidth = function(strokeWidth) {
 	this.strokeWidth = strokeWidth;
 	this.setDirty();
@@ -511,7 +528,9 @@ AminoShape.prototype.setStrokeWidth = function(strokeWidth) {
 AminoShape.prototype.getStrokeWidth = function() {
     return this.strokeWidth;
 }
-AminoShape.prototype.contains = function(ctx) {
+
+//@function contains(point) indicates if the shape contains the point
+AminoShape.prototype.contains = function(point) {
     return false;
 }
 
@@ -520,7 +539,17 @@ AminoShape.prototype.contains = function(ctx) {
 
 
 
+/*
+@class Transform
+A transform applies an affine transform to it's child node.  You must
+pass the child node to the Transform constructor. Then you can set
+the translate, rotate, and scale properties. ex:
 
+var r = new Rect().set(0,0,100,50).setFill("red");
+var t = new Transform(r).setTranslateX(50).setRotate(30);
+
+@end 
+*/
 function Transform(n) {
     this.node = n;
     this.node.parent = this;
@@ -649,8 +678,8 @@ Transform.prototype.setDirty = function() {
 
 
 /*
-@class Group A parent node which holds an ordered list of child nodes. It does not draw anything by itself, but setting visible to false will hide the children.
-@category shape
+@class Group A parent node which holds an ordered list of child nodes. It does not draw anything by itself, but setting visible to false will hide the children. 
+@end
 */
 
 function Group() {
@@ -682,6 +711,7 @@ function Group() {
         return self.y;
     };
     
+    //@property opacity set the opacity of the group
     this.opacity = 1.0;
     this.setOpacity = function(o) {
         self.opacity = o;
@@ -691,14 +721,14 @@ function Group() {
         return self.opacity;
     };
     
-    //@method Add the child `n` to this group.
+    //@function add(node) Add the child `n` to this group.
     this.add = function(n) {
         self.children[self.children.length] = n;
         n.setParent(self);
         self.setDirty();
         return self;
     };
-    //@method Remove the child `n` from this group.
+    //@function remove(node) Remove the child `n` from this group.
     this.remove = function(n) {
         var i = self.children.indexOf(n);
         if(i >= 0) {
@@ -720,29 +750,29 @@ function Group() {
         ctx.translate(-self.x,-self.y);
         ctx.globalAlpha = ga;
     };
-    //@method Remove all children from this group.
+    
+    //@function clear() Remove all children from this group.
     this.clear = function() {
         self.children = [];
         self.setDirty();
         return self;
     };
-    //@method Always returns false. You should call contains on the children instead.
+    //@function contains(x,y) Always returns false. You should call contains on the children instead.
     this.contains = function(x,y) {
         return false;
     };
-    //@method Always returns true, whether or not it actually has children at the time.
+    //@function hasChildren() Always returns true, whether or not it actually has children at the time.
     this.hasChildren = function() {
         return true;
     };
-    //@method Convert the `x` and `y` in to child coordinates.
     this.convertToChildCoords = function(x,y) {
         return [x-self.x,y-self.y];
     };
-    //@method Returns the number of child nodes in this group.
+    //@function childCount() Returns the number of child nodes in this group.
     this.childCount = function() {
         return self.children.length;
     };
-    //@method Returns the child node at index `n`.
+    //@function getChild(n) Returns the child node at index `n`.
     this.getChild = function(n) {
         return self.children[n];
     };
@@ -756,7 +786,13 @@ Group.extend(AminoNode, {});
 
 
 /* ============= Animation ================= */
-
+/*
+@class  PropAnim
+Animates a single property on a node.  You must call the constructor
+with the node, string name of the property, a start value, an end value
+and a duration. Then you can further customize it with functions.
+@end
+*/
 function PropAnim(node,prop,startValue,end,duration) {
 	this.isdom = false;
 	if(node instanceof Element) {
@@ -828,10 +864,13 @@ PropAnim.prototype.update = function() {
 		this.node[fun](val);
 	}
 }
+
+//@function toggle()  Toggle the playing state. If the animation is playing it will stop it. If the animation is stopped it will start playing it.
 PropAnim.prototype.toggle = function() {
 	this.playing = !this.playing;
 	this.engine.animationChanged();
 }
+//@function start() Start playing the animation.
 PropAnim.prototype.start = function() {
 	this.playing = true;
     if(this.engine) {
@@ -839,33 +878,43 @@ PropAnim.prototype.start = function() {
     }
     return this;
 }
+//@function onBefore(callback) set a function to be called just before the animation starts
 PropAnim.prototype.onBefore = function(beforeCallback) {
     this.beforeCallback = beforeCallback;
     return this;
 }
+//@function onAfter(callback) set a function to be called just after the animation starts
 PropAnim.prototype.onAfter = function(afterCallback) {
     this.afterCallback = afterCallback;
     return this;
 }
+//@function setLoop(count) set how many times the animation should loop. The default is 0 (no looping). Set to -1 to loop forever
 PropAnim.prototype.setLoop = function(loop) {
     this.loop = loop;
     this.loopcount = loop;
     return this;
 }
+//@function setAutoReverse(autoReverse) set if the animation should automatically reverse when it reaches the end. This only has an effect if the animation is looping.
 PropAnim.prototype.setAutoReverse = function(autoReverse) {
     this.autoReverse = true;
     return this;
 }
 
-
+/*
+@class SerialAnim
+Performs several animations one after another.
+@end
+*/
 function SerialAnim() {
     this.anims = [];
     this.animIndex = -1;
 }
+//@function add(anim) add another animation
 SerialAnim.prototype.add = function(anim) {
     this.anims.push(anim);
     return this;
 }
+//@function start() starts the animation
 SerialAnim.prototype.start = function() {
 	this.playing = true;
 	this.animIndex = 0;
@@ -895,13 +944,20 @@ SerialAnim.prototype.update = function() {
 }
 
 
+/*
+@class ParallelAnim
+An animation which performs several other animations in Parallel
+@end
+*/
 function ParallelAnim() {
     this.anims = [];
 }
+//@function add(anim) add another animation
 ParallelAnim.prototype.add = function(anim) {
     this.anims.push(anim);
     return this;
 }
+//@function start() starts the animation
 ParallelAnim.prototype.start = function() {
 	this.playing = true;
 	for(var i=0; i<this.anims.length; i++) {
@@ -931,6 +987,12 @@ ParallelAnim.prototype.update = function() {
 	}
 }
 
+/*
+@class CallbackAnim
+An animation which calls a function on every repaint. Mainly used
+for proceeduration animation like particle simulators.
+@end
+*/
 function CallbackAnim() {
     this.started = false;
     this.playing = false;
@@ -946,6 +1008,7 @@ CallbackAnim.prototype.update = function() {
 	    this.callback();
 	}
 }
+//@function start() start the animation
 CallbackAnim.prototype.start = function() {
     this.playing = true;
     if(this.engine) {

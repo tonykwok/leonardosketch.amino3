@@ -1,10 +1,21 @@
+/*
+@class Rect
+
+A rectangle shape.
+@end
+*/
+
 function Rect() {
     AminoShape.call(this);
 	this.typename = "Rect";
     var self = this;
+    //@property x  the x
 	this.x = 0;
+	//@property y the y
 	this.y = 0;
+	//@property w the width
 	this.w = 10;
+	//@property h the height
 	this.h = 10;
 	
 	this.setX = function(x) {
@@ -28,6 +39,8 @@ function Rect() {
 	this.strokeShape = function(ctx) {
 	    ctx.strokeRect(self.x,self.y,self.w,self.h);
 	}
+	
+	//@function set(x,y,w,h)  set the x, y, width, and height all at the same time
 	this.set = function(x,y,w,h) {
         this.x = x;
         this.y = y;
@@ -51,7 +64,12 @@ Rect.extend(AminoShape);
 
 
 
-
+/*
+@class Text
+A node which draws text with a single style. The text can have any
+CSS font setting and be positioned anywhere.
+@end
+*/
 
 function Text() {
     AminoShape.call(this);
@@ -59,6 +77,7 @@ function Text() {
 	this.y = 0;
 	this.font = "12pt sans-serif";
 	
+	//@property x the x
 	this.setX = function(x) {
 	    this.x = x;
 	    return this;
@@ -66,6 +85,7 @@ function Text() {
 	this.getX = function() {
 	    return this.x;
 	}
+	//@property y the y
 	this.setY = function(y) {
 	    this.y = y;
 	    return this;
@@ -74,10 +94,12 @@ function Text() {
 	    return this.y;
 	}
 	
+	//@property text the actual string of text to be draw
 	this.text = "random text";
 	return this;
 }
 Text.extend(AminoShape);
+//@function set(text,x,y) shortcut to set the text, x and y of the text
 Text.prototype.set = function(text,x,y) {
 	this.x = x;
 	this.y = y;
@@ -88,6 +110,8 @@ Text.prototype.setText = function(text) {
     this.text = text;
     return this;
 }
+
+//@property font(fontstring) the font to render the text with. Uses the CSS font shortcut, such as '12pt bold Arial'
 Text.prototype.setFont = function(font) {
     this.font = font;
     return this;
@@ -102,15 +126,21 @@ Text.prototype.contains = function(pt) {
 }
 
 
-
+/*
+@class Circle
+A circle shape. The x and y are the *center* of the circle.
+@end
+*/
 function Circle() {
     AminoShape.call(this);
 	this.x = 0;
 	this.y = 0;
 	this.radius = 10;
+	//@property x the center x of the circle
 	this.getX = function() {
 	    return this.x;
 	}
+	//@property y the center y of the circle
 	this.getY = function() {
 	    return this.y;
 	}
@@ -125,6 +155,7 @@ function Circle() {
 	return this;
 }
 Circle.extend(AminoShape);
+//@function set(x,y,radius)  a shortcut function to set the center x, center y, and radius of the circle
 Circle.prototype.set = function(x,y,radius) {
 	this.x = x;
 	this.y = y;
@@ -176,38 +207,38 @@ function Segment(kind,x,y,a,b,c,d) {
 
 /*
 @class Path A Path is a sequence of line and curve segments. It is used for drawing arbitrary shapes and animating.  Path objects are immutable. You should create them and then reuse them.
-@category resource
+@end
 */
 function Path() {
     this.segments = [];
     this.closed = false;
     
-    //@doc jump directly to the x and y. This is usually the first thing in your path.
+    //@function moveTo(x,y) jump directly to the x and y. This is usually the first thing in your path.
     this.moveTo = function(x,y) { 
         this.segments.push(new Segment(SEGMENT_MOVETO,x,y)); 
         return this; 
     };
     
-    //@doc draw a line from the previous x and y to the new x and y.
+    //@function lineTo(x,y) draw a line from the previous x and y to the new x and y.
     this.lineTo = function(x,y) { 
         this.segments.push(new Segment(SEGMENT_LINETO,x,y)); 
         return this; 
     };
     
-    //@doc close the path. It will draw a line from the last x,y to the first x,y if needed.
+    //@function closeTo(x,y) close the path. It will draw a line from the last x,y to the first x,y if needed.
     this.closeTo = function(x,y) {
         this.segments.push(new Segment(SEGMENT_CLOSETO,x,y)); 
         this.closed = true;
         return this;
     };
     
-    //@doc draw a beizer curve from the previous x,y to a new point (x2,y2) using the four control points (cx1,cy1,cx2,cy2).
+    //@function curveTo(cx1,cy1,cx2,cy2,x2,y2) draw a beizer curve from the previous x,y to a new point (x2,y2) using the four control points (cx1,cy1,cx2,cy2).
     this.curveTo = function(cx1,cy1,cx2,cy2,x2,y2) {
         this.segments.push(new Segment(SEGMENT_CURVETO,cx1,cy1,cx2,cy2,x2,y2));
         return this;
     };
     
-    //@doc build the final path object.
+    //@function build() build the final path object.
     this.build = function() {
         return this;
     };
@@ -264,12 +295,12 @@ function getBezier(percent, C1, C2, C3, C4) {
 
 
 /*
-@class PathNode  Draws a path.
-@category shape
+@class PathNode Draws a path.
+@end
 */
 function PathNode() {
     AminoShape.call(this);
-    //@property path  the Path to draw
+    //@property path the Path to draw
     this.path = null;
     this._bounds = null;
     
@@ -340,7 +371,12 @@ PathNode.prototype.fillShape = function(ctx) {
 }
 
 
-
+/*
+@class Ellipse
+An ellipse / oval shape. X and Y and width and height represent 
+the rectangular bounds of the ellipse.
+@end
+*/
 function Ellipse() {
     AminoShape.call(this);
     var self = this;
@@ -366,7 +402,7 @@ function Ellipse() {
     this.setHeight = function(height) { this.height = height; this.setDirty(); return this; };
 
 
-    //@method Set the x, y, w, h at the same time.
+    //@function set(x,y,w,h) Set the x, y, w, h at the same time.
     this.set = function(x,y,w,h) {
         this.x = x;
         this.y = y;
@@ -401,7 +437,11 @@ function Ellipse() {
 Ellipse.extend(AminoShape);
 
 
-
+/*
+@class ImageView
+A node which draws an image. You must create it using the constructor with a string URL. Ex:  var img = new ImageView("foo.png");
+@end
+*/
 function ImageView(url) {
     AminoNode.call(this);
     var self = this;
@@ -467,6 +507,14 @@ ImageView.extend(AminoNode);
 
 
 // =========== Paints ===========
+/*
+@class LinearGradientFill
+A *fill* that can be used to fill shapes with a linear gradient. First
+create the gradient at an x,y,w,h using the constructor, then add
+colors using the *addStop* function.  The LinearGradientFill can be
+used with the *fill* property of any shape.
+@end
+*/
 function LinearGradientFill(x,y,width,height) {
     var self = this;
     self.x = x;
@@ -475,6 +523,7 @@ function LinearGradientFill(x,y,width,height) {
     self.height = height;
     self.offsets = [];
     self.colors = [];
+    //@function addStop(offset,color) add a new color stop to the gradient. Offset should be between 0 and 1. Color should be a string color like "#00ff00" or "green".
     self.addStop = function(offset, color) {
         self.offsets.push(offset);
         self.colors.push(color);
@@ -493,6 +542,14 @@ function LinearGradientFill(x,y,width,height) {
 
 
 
+/*
+@class RadialGradientFill
+A *fill* that can be used to fill shapes with a radial gradient. First
+create the gradient at an x,y, and radius using the constructor, then add
+colors using the *addStop* function.  The RadialGradientFill can be
+used with the *fill* property of any shape.
+@end
+*/
 function RadialGradientFill(x,y,radius) {
     var self = this;
     self.x = x;
@@ -500,6 +557,7 @@ function RadialGradientFill(x,y,radius) {
     self.radius = radius;
     self.offsets = [];
     self.colors = [];
+    //@function addStop(offset,color) add a new color stop to the gradient. Offset should be between 0 and 1. Color should be a string color like "#00ff00" or "green".
     self.addStop = function(offset, color) {
         self.offsets.push(offset);
         self.colors.push(color);
@@ -514,6 +572,11 @@ function RadialGradientFill(x,y,radius) {
     }
 };
 
+/*
+@class PatternFill
+A PatternFill fills a shape with an image, optionally repeated.
+@end
+*/
 function PatternFill(url, repeat) {
     var self = this;
     
