@@ -40,7 +40,6 @@ function parseData2(data) {
     while(true) {
         var res = regex.exec(data);
         if(res == null) break;
-        //console.log(res[1]);
         
         if(res[1] == "overview") {
             var end = regex.exec(data);
