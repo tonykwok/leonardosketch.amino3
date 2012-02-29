@@ -1,0 +1,10 @@
+{
+	"id": "com.joshondesign.amino.blocksgame",
+	"version": "0.0.1",
+	"vendor": "Josh Marinacci",
+	"type": "web",
+	"main": "index.html",
+	"title": "Amino Blocks",
+	"icon": "icon.png",
+	"uiRevision": 2
+}

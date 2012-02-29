@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0 " />
+    <script src="../../dist/amino.js"></script>
+    <script language="JavaScript"></script>
+<style type="text/css">
+canvas { border: 1px solid black; }
+</style>
+<body>
+<canvas id="can" width="500" height="500"></canvas>
+
+<script language="JavaScript">
+    var runner = new Amino();
+    var canvas = runner.addCanvas("can");
+//    runner.autoPaint = true;
+    var g = new Group();
+    canvas.add(g);
+     
+    var MAX_WIDTH = 500;
+    var MAX_HEIGHT = 500;
+    var MAX_FPS = 30;
+    var count = 0;
+    var PARTICLE_INCREMENT = 30;
+	var anim = new CallbackAnim()
+	anim.callback = function() {
+        if(count % 100 == 0 && g.childCount() < 100) {
+            for(var j=0;j<PARTICLE_INCREMENT;j++) {
+                var r = new Circle().setFill("red").setStrokeWidth(0);
+                r.vx = (0.5+Math.random())/1.0;
+                r.vy = (0.5+Math.random())/1.0;
+                g.add(r);
+            }
+        }
+        //ADB.debugLine("particle count = " + g.children.length);
+        count++;
+        for(var i=0;i<g.children.length;i++) {
+            var r = g.children[i];
+            r.x += r.vx;
+            r.y += r.vy;
+            if(r.x > MAX_WIDTH) r.x = 0;
+            if(r.y > MAX_HEIGHT) r.y = 0;
+        }
+        g.setDirty();
+    };
+    anim.start();
+    runner.addAnim(anim);
+    runner.start();
+    
+    
+    var data = "this is some\n text to read\n";
+    var regex = new RegExp("this(.*)text","m");
+    console.log("multi = " + regex.multiline);
+    console.log(regex.exec(data));
+
+</script>
+
+</body>
+</html>

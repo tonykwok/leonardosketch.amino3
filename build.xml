@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+<project default="all">
+
+<target name="init">
+    <property name="tests.dir" value="samples/js"/>
+    <property name="version" value="unknownversion"/>
+    <property name="amino.path" value="dist/amino-${version}.js"/>
+    
+    <echo message="basedir = ${basedir}"/>
+    <buildnumber/>
+    <tstamp>
+        <format property="TIMESTAMP" pattern="yyyy-MM-dd_kk-mm"/>
+    </tstamp>
+    <echo message="timestamp = ${TIMESTAMP}"/>
+
+    <property  name="publish.dir" value="blah"/>
+    <echo message="publish dir = ${publish.dir}"/>
+    <echo message="build.number = ${build.number}"/>
+    <mkdir dir="dist"/>
+</target>
+
+<target name="build-js" depends="init">
+    <concat destfile="dist/amino.js">
+        <fileset dir="src/">
+            <include name="amino*.js"/>
+        </fileset>
+    </concat>
+    <copy file="dist/amino.js" tofile="dist/amino-${version}-b${build.number}.js"/>
+    
+    <copy todir="dist">
+        <fileset dir="src/">
+            <exclude name="amino*.js"/>
+        </fileset>
+    </copy>
+</target>
+
+
+<target name="doc-js">
+    <mkdir dir="dist/doc"/>
+<!--    <exec command="node tools/joshdoc.js"/>-->
+    <exec command="node tools/joshdoc.js" output="dist/doc/test.html"/>
+    <copy todir="dist/doc" file="tools/style.css"/>
+</target>
+
+<target name="clean">
+    <delete dir="dist"/>
+</target>
+
+<target name="publish" depends="init, build-js, doc-js">
+    <copy todir="${publish.dir}">
+        <fileset dir="dist/">
+        </fileset>
+    </copy>
+</target>
+
+
+</project>

@@ -1,0 +1,228 @@
+<html>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <script src="../../dist/amino.js"></script>
+    <style>
+body {
+    padding: 0;
+    margin: 0;
+    border: 0px solid red;
+}
+    </style>
+
+<body>
+<canvas id="can" width="1024" height="740"></canvas>
+
+<script language="JavaScript">
+    var runner = new Amino();
+    var canvas = runner.addCanvas("can");
+    //runner.background = "black";
+    //runner.clearBackground = true;
+    //runner.fps = 30;
+    runner.autoPaint = true;
+    
+    var bg = new ImageView("background.png");
+    var block1 = new ImageView("images/block1.png").setX(730).setY(450);
+    block1.solved = false;
+    var block2 = new ImageView("images/block2.png").setX(550).setY(200);
+    block2.solved = false;
+    var block3 = new ImageView("images/block3.png").setX(300).setY(500);
+    block3.solved = false;
+    
+    var block1spot = new AminoShape();
+    block1spot.getX = function() { return 105; };
+    block1spot.getY = function() { return 60; };
+    block1spot.fillShape = function(ctx) {
+        if(!block3spot.isVisible()) return;
+        ctx.fillStyle = "black";
+        ctx.beginPath();
+        ctx.save();
+        ctx.globalAlpha = 0.5;
+        ctx.translate(105+5,60+10);
+        ctx.moveTo(0,109);
+        ctx.lineTo(192,0);
+        ctx.lineTo(192,219);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    };
+    
+    var block2spot = new AminoShape();
+    block2spot.getX = function() { return 105; };
+    block2spot.getY = function() { return 360; };
+    block2spot.fillShape = function(ctx) {
+        if(!block3spot.isVisible()) return;
+        ctx.fillStyle = "black";
+        ctx.beginPath();
+        ctx.save();
+        ctx.globalAlpha = 0.5;
+        ctx.translate(105+5,360+10);
+        ctx.moveTo(0,2);
+        ctx.lineTo(112,2);
+        ctx.lineTo(112,219);
+        ctx.lineTo(0,219);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    };
+    
+    var block3spot = new AminoShape();
+    block3spot.getX = function() { return 705; };
+    block3spot.getY = function() { return 60; };
+    block3spot.fillShape = function(ctx) {
+        if(!block3spot.isVisible()) return;
+        ctx.fillStyle = "black";
+        ctx.beginPath();
+        ctx.save();
+        ctx.globalAlpha = 0.5;
+        ctx.translate(705+8,60+10);
+        var r = 83;
+        ctx.arc(r,r,r, 0, Math.PI*2, true); 
+        ctx.fill();
+        ctx.restore();
+    };
+    
+    
+    var blocks = [block1,block2,block3];
+    
+    var solvedOverlay = new Group();
+    solvedOverlay.add(new Rect().set(100,100,1024-200,740-200).setFill("rgba(100,100,100,0.5)"));
+    solvedOverlay.add(new Text().setText("Solved")
+        .setX(320).setY(390).setFont("100pt Georgia").setFill("white"));
+    solvedOverlay.add(new Text().setText("Tap to play again")
+        .setX(390).setY(450).setFont("24pt Georgia").setFill("white"));
+    solvedOverlay.setVisible(false);
+    
+    var blocksGroup = new Group().add(block1).add(block2).add(block3);
+    
+    
+    // =========== splash screen ==========
+    
+    var childnode = new Rect()
+            .set(100,100,1024-200,768-200)
+            .setFill("rgba(100,100,100,0.5)");
+    var splashOverlay = new Group()
+        .add(childnode)
+        .add(new Text().setText("Drag the blocks into the holes")
+            .setFill("white")
+            .setFont("36pt Arial")
+            .setX(200).setY(240))
+        .add(new Text().setText("Tap to start")
+            .setFill("white").setFont("24pt Arial")
+            .setX(430).setY(300))
+        ;
+    
+    // =========== put it all together ====
+    canvas.add(new Group()
+        .add(bg)
+        .add(block1spot)
+        .add(block2spot)
+        .add(block3spot)
+        .add(blocksGroup)
+        .add(solvedOverlay)
+        .add(splashOverlay)
+        );
+        
+        /*
+    runner.addCallback(function(){
+        var s = true;
+        for(var i =0; i<blocks.length; i++) {
+            if(!blocks[i].solved) {
+                s = false;
+            }
+        }
+        if(s) {
+            if(!solvedOverlay.isVisible()) {
+                solvedOverlay.setVisible(true);
+            }
+        }
+    });
+    */
+    runner.start();
+    
+    function Dragger(target, spot) {
+        var sx = 0;
+        var sy = 0;
+        var started = false;
+        console.log("looking for presses on: " + target.typename);
+        canvas.onPress(target, function(e) {
+            console.log("got press on: " + target);
+            if(e.target == target) {
+                started = true;
+                //var p = target.getParent();
+                //p.remove(target);
+                //p.add(target);
+            }
+            sx = e.point.x;
+            sy = e.point.y;
+        });
+        
+        canvas.onDrag(target, function(e) {
+            if(e.target && started) {
+                var dx = e.point.x-sx;
+                var dy = e.point.y-sy;
+                sx = e.point.x;
+                sy = e.point.y;
+                var x = e.target.getX() + dx;
+                var y = e.target.getY() + dy;
+                e.target.setX(x);//e.point.x);
+                e.target.setY(y);//e.point.y);
+                console.log("set x to: " + e.target.getX());
+                if(within(target.getX(),spot.getX(),10)) {
+                    if(within(target.getY(),spot.getY(),10)) {
+                        target.setX(spot.getX());
+                        target.setY(spot.getY());
+                    }
+                }
+            }
+        });
+        canvas.onRelease(target, function(e) {
+            started = false;
+            if(within(target.getX(),spot.getX(),10)) {
+                if(within(target.getY(),spot.getY(),10)) {
+                    target.solved = true;
+                }
+            }
+        });
+        
+        
+    };
+    
+    function within(a,b,thresh) {
+        return Math.abs(b-a) <= thresh;
+    }
+
+    new Dragger(block1,block1spot);    
+    new Dragger(block2,block2spot);    
+    new Dragger(block3,block3spot);    
+    
+//    runner.addAnim(new PropAnim(splashOverlay,"x",-1024,0,3).start());
+//    runner.addAnim(new PropAnim(bg,"x",1024,0,3).start());        
+    splashOverlay.setVisible(true);
+    blocksGroup.setVisible(false);
+    block1spot.setVisible(false);
+    block2spot.setVisible(false);
+    block3spot.setVisible(false);
+    canvas.onClick(childnode, function() {
+            console.log("clicked on the overlay");
+            splashOverlay.setVisible(false);
+            block1spot.setVisible(true);
+            block2spot.setVisible(true);
+            block3spot.setVisible(true);
+            blocksGroup.setVisible(true);
+    });
+    /*
+    runner.listen("MOUSE_PRESS", solvedOverlay, function(e) {
+            solvedOverlay.setVisible(false);
+            block1.setX(730).setY(450);
+            block1.solved = false;
+            block2.setX(550).setY(200).solved = false;
+            block3.setX(300).setY(500).solved = false;
+    });
+    */
+    
+    
+//    runner.DEBUG = false;
+</script>
+
+</body>
+</html>

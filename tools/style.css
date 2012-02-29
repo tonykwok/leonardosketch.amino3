@@ -1,0 +1,34 @@
+h1 {
+	padding: 0.5em;
+	border-color: #ff1f41;
+	border-style: solid;
+	border-left-width: 0px;
+	border-bottom-width: 3px;
+	border-right-width: 0px;
+	border-top-width: 0px;
+}
+
+body {
+	background-color: #fbfbfb;
+	font-family: Helvetica, Verdana, Arial, sans-serif;
+	width: 40em;
+	line-height: 150%;
+}
+
+h3 {
+	font-size: 100%;
+	text-transform: uppercase;
+}
+
+
+li b {
+	padding: 0.1em 0.5em 0.1em 0.5em;
+	background-color: #d50507;
+	color: #fef7ff;
+	border-radius: 1em;
+}
+
+li {
+	list-style-type: none;
+}
+
