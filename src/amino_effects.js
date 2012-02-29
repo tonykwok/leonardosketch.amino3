@@ -37,7 +37,8 @@ function WorkTile(left,top,width,height, src, dst) {
 
 /*
 @class SaturationNode A parent node which adjusts the saturation of its child. Uses a buffer internally.
-@category effect
+#category effects
+@end
 */
 function SaturationNode(n) {
     Node.call(this);
@@ -134,7 +135,8 @@ SaturationNode.extend(AminoNode);
 
 /*
 @class BackgroundSaturationNode A parent node which adjusts the saturation of its child. Uses a buffer internally.
-@category effect
+#category effects
+@end
 */
 function BackgroundSaturationNode(n) {
     AminoNode.call(this);
@@ -332,7 +334,8 @@ BackgroundSaturationNode.extend(AminoNode);
 
 /*
 @class BlurNode A parent node which blurs its child.
-@category effect
+#category effects
+@end
 */
 function BlurNode(n) {
 	this.node = n;
@@ -444,7 +447,8 @@ BlurNode.extend(AminoNode);
 
 /*
 @class ShadowNode A parent node which draws a shadow under its child. Uses a buffer internally.
-@category effect
+#category effects
+@end
 */
 function ShadowNode(n) {
     console.log("initing shadow node");
@@ -554,7 +558,8 @@ ShadowNode.extend(BlurNode);
 
 /*
 @class Buffer An offscreen area that you can draw into. Used for special effects and caching.
-@category resource
+#category effects
+@end
 */
 function Buffer(w,h) {
     var self = this;    
@@ -630,7 +635,8 @@ function Buffer(w,h) {
 
 /* 
 @class BufferNode A node which draws its child into a buffer. Use it to cache children which are expensive to draw.
-@category misc
+#category effects
+@end
 */
 function BufferNode(n) {
 	AminoNode.call(this);

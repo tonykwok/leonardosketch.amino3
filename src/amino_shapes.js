@@ -2,6 +2,7 @@
 @class Rect
 
 A rectangle shape.
+#category shapes
 @end
 */
 
@@ -20,6 +21,7 @@ function Rect() {
 	
 	this.setX = function(x) {
 	    this.x = x;
+	    this.setDirty();
 	    return this;
 	};
 	this.getX = function() {
@@ -27,18 +29,13 @@ function Rect() {
 	}
 	this.setY = function(y) {
 	    this.y = y;
+	    this.setDirty();
 	    return this;
 	};
 	this.getY = function() {
 	    return this.y;
 	}
 	
-	this.fillShape = function(ctx) {
-	    ctx.fillRect(self.x,self.y,self.w,self.h);
-	}
-	this.strokeShape = function(ctx) {
-	    ctx.strokeRect(self.x,self.y,self.w,self.h);
-	}
 	
 	//@function set(x,y,w,h)  set the x, y, width, and height all at the same time
 	this.set = function(x,y,w,h) {
@@ -46,6 +43,7 @@ function Rect() {
         this.y = y;
         this.w = w;
         this.h = h;
+        this.setDirty();
         return this;
     }
     
@@ -60,7 +58,62 @@ function Rect() {
 	return this;
 }
 Rect.extend(AminoShape);
-
+Rect.prototype.fillShape = function(ctx) {
+    if(this.corner > 0) {
+        var x = this.x;
+        var y = this.y;
+        var w = this.w;
+        var h = this.h;
+        var r = this.corner;
+        ctx.beginPath();
+        ctx.moveTo(x+r,y);
+        ctx.lineTo(x+w-r, y);
+        ctx.bezierCurveTo(x+w-r/2,y,   x+w,y+r/2,   x+w,y+r);
+        ctx.lineTo(x+w,y+h-r);
+        ctx.bezierCurveTo(x+w,y+h-r/2, x+w-r/2,y+h, x+w-r, y+h);
+        ctx.lineTo(x+r,y+h);
+        ctx.bezierCurveTo(x+r/2,y+h,   x,y+h-r/2,   x,y+h-r);
+        ctx.lineTo(x,y+r);
+        ctx.bezierCurveTo(x,y+r/2,     x+r/2,y,     x+r,y);
+        ctx.closePath();
+        ctx.fill();
+    } else {
+        ctx.fillRect(this.x,this.y,this.w,this.h);
+    }
+}
+Rect.prototype.strokeShape = function(ctx) {
+    if(this.corner > 0) {
+        var x = this.x;
+        var y = this.y;
+        var w = this.w;
+        var h = this.h;
+        var r = this.corner;
+        ctx.beginPath();
+        ctx.moveTo(x+r,y);
+        ctx.lineTo(x+w-r, y);
+        ctx.bezierCurveTo(x+w-r/2,y,   x+w,y+r/2,   x+w,y+r);
+        ctx.lineTo(x+w,y+h-r);
+        ctx.bezierCurveTo(x+w,y+h-r/2, x+w-r/2,y+h, x+w-r, y+h);
+        ctx.lineTo(x+r,y+h);
+        ctx.bezierCurveTo(x+r/2,y+h,   x,y+h-r/2,   x,y+h-r);
+        ctx.lineTo(x,y+r);
+        ctx.bezierCurveTo(x,y+r/2,     x+r/2,y,     x+r,y);
+        ctx.closePath();
+        ctx.strokeStyle = this.getStroke();
+        ctx.lineWidth = this.strokeWidth;
+        ctx.stroke();
+    } else {
+        ctx.strokeRect(this.x,this.y,this.w,this.h);
+    }
+}
+Rect.prototype.setCorner = function(corner) {
+    this.corner = corner;
+	this.setDirty();
+    return this;
+}
+Rect.prototype.getCorner = function(corner) {
+    return this.corner;
+}
 
 
 
@@ -68,26 +121,30 @@ Rect.extend(AminoShape);
 @class Text
 A node which draws text with a single style. The text can have any
 CSS font setting and be positioned anywhere.
+#category shapes
 @end
 */
 
 function Text() {
     AminoShape.call(this);
-	this.x = 0;
-	this.y = 0;
 	this.font = "12pt sans-serif";
 	
 	//@property x the x
+	this.x = 0;
 	this.setX = function(x) {
 	    this.x = x;
+	    this.setDirty();
 	    return this;
 	};
 	this.getX = function() {
 	    return this.x;
 	}
+	
 	//@property y the y
+	this.y = 0;
 	this.setY = function(y) {
 	    this.y = y;
+	    this.setDirty();
 	    return this;
 	};
 	this.getY = function() {
@@ -96,6 +153,39 @@ function Text() {
 	
 	//@property text the actual string of text to be draw
 	this.text = "random text";
+	
+    //@property autoSize  should the bounds of the text be calculated from the text, or explicit
+    this.autoSize = true;
+    this.setAutoSize = function(autoSize) {
+        this.autoSize = autoSize; 
+        this.setDirty(); 
+        return this; 
+    };
+    
+    //@property width width of text box
+    this.width = 100;
+    this.setWidth = function(width) { 
+        this.width = width; 
+        this.setDirty(); 
+        return this; 
+    };
+    
+    //@property height height of text box
+    this.height = 100;
+    this.setHeight = function(height) { 
+        this.height = height; 
+        this.setDirty(); 
+        return this; 
+    };
+
+    //@property halign
+    this.halign = 'left';
+    this.setHAlign = function(halign) { 
+        this.halign = halign; 
+        this.setDirty(); 
+        return this; 
+    };    
+	
 	return this;
 }
 Text.extend(AminoShape);
@@ -104,22 +194,65 @@ Text.prototype.set = function(text,x,y) {
 	this.x = x;
 	this.y = y;
 	this.text = text;
+	this.setDirty();
 	return this;
 }
 Text.prototype.setText = function(text) {
     this.text = text;
+    this.setDirty();
     return this;
 }
+
 
 //@property font(fontstring) the font to render the text with. Uses the CSS font shortcut, such as '12pt bold Arial'
 Text.prototype.setFont = function(font) {
     this.font = font;
     return this;
 }
-Text.prototype.fillShape = function(g) {
-	g.fillStyle = this.fill;
-	g.font = this.font;
-	g.fillText(this.text,this.x,this.y);
+
+
+Text.prototype.fillShape = function(ctx) {
+	ctx.font = this.font;
+    var strs = this.text.split('\n');
+    var h = ctx.measureText('m').width;
+    var mw = 0;
+    var y = this.y;
+    if(this.autoSize) {
+        for(var i=0; i<strs.length; i++) {
+            ctx.fillText(strs[i], this.x, y);
+            mw = Math.max(mw,ctx.measureText(strs[i]));
+            y+= h;
+        }
+    } else {
+        mw = this.width;
+        var align = ctx.textAlign;
+        if(this.halign == 'left') {
+            ctx.textAlign = 'left';
+            for(var i=0; i<strs.length; i++) {
+                ctx.fillText(strs[i], this.x, y);
+                y+= h;
+            }
+        }
+        if(this.halign == 'right') {
+            ctx.textAlign = 'right';
+            for(var i=0; i<strs.length; i++) {
+                ctx.fillText(strs[i], this.x + this.width, y);
+                y+= h;
+            }
+        }
+        if(this.halign == 'center') {
+            ctx.textAlign = 'center';
+            for(var i=0; i<strs.length; i++) {
+                ctx.fillText(strs[i], this.x + this.width/2, y);
+                y+= h;
+            }
+        }
+        ctx.textAlign = align;
+    }
+}
+Text.prototype.strokeShape = function(g) {
+	//g.font = this.font;
+	//g.strokeText(this.text,this.x,this.y);
 }
 Text.prototype.contains = function(pt) {
 	return false;
@@ -129,6 +262,7 @@ Text.prototype.contains = function(pt) {
 /*
 @class Circle
 A circle shape. The x and y are the *center* of the circle.
+#category shapes
 @end
 */
 function Circle() {
@@ -207,6 +341,7 @@ function Segment(kind,x,y,a,b,c,d) {
 
 /*
 @class Path A Path is a sequence of line and curve segments. It is used for drawing arbitrary shapes and animating.  Path objects are immutable. You should create them and then reuse them.
+#category shapes
 @end
 */
 function Path() {
@@ -296,6 +431,7 @@ function getBezier(percent, C1, C2, C3, C4) {
 
 /*
 @class PathNode Draws a path.
+#category shapes
 @end
 */
 function PathNode() {
@@ -369,12 +505,29 @@ PathNode.prototype.fillShape = function(ctx) {
         ctx.fill();
     }
 }
-
+PathNode.prototype.strokeShape = function (ctx) {
+    ctx.beginPath();
+    for(var i=0; i<this.path.segments.length; i++) {
+        var s = this.path.segments[i];
+        if(s.kind == SEGMENT_MOVETO) 
+            ctx.moveTo(s.x,s.y);
+        if(s.kind == SEGMENT_LINETO) 
+            ctx.lineTo(s.x,s.y);
+        if(s.kind == SEGMENT_CURVETO)
+            ctx.bezierCurveTo(s.cx1,s.cy1,s.cx2,s.cy2,s.x,s.y);
+        if(s.kind == SEGMENT_CLOSETO)
+            ctx.closePath();
+    }
+    if(this.path.closed) {
+        ctx.stroke();
+    }
+}
 
 /*
 @class Ellipse
 An ellipse / oval shape. X and Y and width and height represent 
 the rectangular bounds of the ellipse.
+#category shapes
 @end
 */
 function Ellipse() {
@@ -428,18 +581,20 @@ function Ellipse() {
         ctx.bezierCurveTo(eX, mY + vB, mX + hB, eY, mX, eY);
         ctx.bezierCurveTo(mX - hB, eY, aX, mY + vB, aX, mY);
         ctx.closePath();
-        ctx.save();
         ctx.fill();
-        ctx.restore();
     };
     return true;
 };
 Ellipse.extend(AminoShape);
+Ellipse.prototype.strokeShape = function (ctx) {
+    ctx.stroke();
+}
 
 
 /*
 @class ImageView
 A node which draws an image. You must create it using the constructor with a string URL. Ex:  var img = new ImageView("foo.png");
+#category shapes
 @end
 */
 function ImageView(url) {
@@ -458,7 +613,6 @@ function ImageView(url) {
         this.width = 10;
         this.height = 10;
         this.img.onload = function() {
-            console.log("loaded");
             self.loaded = true;
             self.setDirty();
             self.width = self.img.width;
@@ -513,6 +667,7 @@ A *fill* that can be used to fill shapes with a linear gradient. First
 create the gradient at an x,y,w,h using the constructor, then add
 colors using the *addStop* function.  The LinearGradientFill can be
 used with the *fill* property of any shape.
+#category shapes
 @end
 */
 function LinearGradientFill(x,y,width,height) {
@@ -548,6 +703,7 @@ A *fill* that can be used to fill shapes with a radial gradient. First
 create the gradient at an x,y, and radius using the constructor, then add
 colors using the *addStop* function.  The RadialGradientFill can be
 used with the *fill* property of any shape.
+#category shapes
 @end
 */
 function RadialGradientFill(x,y,radius) {
@@ -575,6 +731,7 @@ function RadialGradientFill(x,y,radius) {
 /*
 @class PatternFill
 A PatternFill fills a shape with an image, optionally repeated.
+#category shapes
 @end
 */
 function PatternFill(url, repeat) {

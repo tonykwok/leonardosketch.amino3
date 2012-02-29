@@ -1,23 +1,9 @@
 body {
 	font-family: Helvetica, Verdana, Arial, sans-serif;
     margin-left: 14em;
-    margin-right: 10em;
-    border: 0px solid blue;
+    border: 0px solid black;
 }
 
-h2 {
-	border-color: #9b230f;
-	border-style: dashed;
-	border-left-width: 0px;
-	border-bottom-width: 1px;
-	border-right-width: 0px;
-	border-top-width: 0px;
-	padding-top: 3em;
-}
-
-h2 a {
-    padding-top: 1.5em;
-}
 
 h3 {
 	font-variant: small-caps;
@@ -38,39 +24,18 @@ ul {
 	margin-bottom: 3em;
 }
 
-li span {
-	font-style: normal;
-	font-weight: normal;
-	padding-bottom: 0.1em;
-	padding-top: 0.1em;
-	color: white;
-	padding-right: 0.6em;
-	padding-left: 0.6em;
-	background-color: #892612;
-	border-radius: 1em;
-}
 
 
 a {
     text-decoration: none;
 }
 
-span b, span i {
-	font-style: normal;
-	font-weight: normal;
-}
-
-span {
-	margin-right: 0.5em;
-}
 
 
 /* navigation sidebar */
 #nav {
     margin: 0;
     padding: 0;
-    border: 0px solid red;
-    background-color: #feffdc;
     position: fixed;
     width: 14em;
     top: 0;
@@ -85,12 +50,6 @@ span {
     overflow: auto;
 }
 
-#nav li {
-    border: 0px solid red;
-    margin: 0;
-    padding: 0;
-}
-
 #nav a {
 	text-decoration: none;
 	color: black;
@@ -102,3 +61,78 @@ span {
 
 
 
+/*
+light to dark
+white
+EEE6AB
+C5BC8E
+696758
+45484B
+36393B
+dark gray: #555
+black
+
+offwhite: #eee
+*/
+body {
+	max-width: 40em;
+	background-color: #36393B;
+	color: #eee;
+}
+#nav {
+    background-color: #45484B;
+    color: #EEE6AB;
+}
+#nav li {
+    background-color: #45484B;
+    border-width: 0;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+}
+#nav a {
+    color: #EEE6AB;
+}
+
+.class {
+    padding: 1rem;
+}
+
+h2 {
+    color: white;
+    font-weight: normal;
+    font-size: 300%;
+    text-shadow: 0px 1px 2px #000;
+}
+
+h3 {
+    color: #C5BC8E;
+}
+
+ul li {
+    border: 1px solid #555;
+    border-radius: 10px;
+    background-color: #45484B;
+    margin: 1em;
+    padding: 1em;
+    color: white;
+}
+
+pre {
+    background-color: #EEE6AB;
+    padding: 1em;
+    margin: 1em;
+    color: black;
+    border-radius: 10px;
+}
+
+
+li span {
+	display: block;
+	margin-bottom: 0.5em;
+	color: #EEE6AB;
+	font-weight: normal;
+}
+li span b, li span i {
+	font-weight: normal;
+}

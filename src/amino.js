@@ -1,12 +1,18 @@
 /*
 @overview Amino: JavaScript Scenegraph
 
-Amino is a scenegraph for drawing 2D graphics in JavaScript with the
-HTML 5 Canvas API. By creating a tree of nodes, you can draw shapes,
-text, images special effects; complete with transforms and animation.
-Amino takes care of all rendering, animation, and event handling
-so you can build *rich* interactive graphics with very little code.
-Using Amino is much more convenient than writing canvas code by hand.
+Amino is a scenegraph for drawing 2D graphics 
+in JavaScript with the
+HTML 5 Canvas API. By creating a tree of nodes,
+you can draw shapes,
+text, images special effects; complete with
+transforms and animation.
+Amino takes care of all rendering, animation, 
+and event handling
+so you can build *rich* interactive graphics 
+with very little code.
+Using Amino is much more convenient than 
+writing Canvas code by hand.
 
 Here's a quick example:    
 
@@ -109,7 +115,11 @@ Function.prototype.extend = function(superclass, proto) {
 
 
 /*
-@class Amino The engine that drives the whole system. 
+@class Amino 
+
+#category core
+
+The engine that drives the whole system. 
 You generally only need one of these per page. It is
 the first thing you create. Attach canvases to it using
 addCanvas. ex:  
@@ -195,6 +205,9 @@ Amino.prototype.animationChanged = function() {
 @class Canvas represents a drawable area on the screen, usually
 a canvas tag.  Create it using the Amino class by passing the
 ID of your canvas tag to amino.addClass(id);
+
+#category core
+
 @end
 */
 
@@ -455,6 +468,7 @@ Canvas.prototype.getHeight = function() {
 
 /*
 @class AminoNode the base class for all nodes
+#category core
 @end
 */
 function AminoNode() {
@@ -494,6 +508,7 @@ function AminoNode() {
 /*
 @class AminoShape
 The base class for all shape nodes. Shapes all have fills and strokes.
+#category core
 @end
 */
 function AminoShape() {
@@ -503,6 +518,7 @@ function AminoShape() {
 	this.fill = "gray";
 	this.stroke = "black";
 	this.strokeWidth = 0;
+	this.opacity = 1.0;
 	
 	//@property fill  The fill color of this shape. This can be a hex string like "#ff0000" or a color name like "red" or a complex fill such as a gradient.
 	this.setFill = function(fill) {
@@ -510,13 +526,21 @@ function AminoShape() {
 	    self.setDirty();
 	    return self;
 	}
+	
 	this.paint = function(ctx) {
         if(self.fill.generate) {
             ctx.fillStyle = self.fill.generate(ctx);
         } else {
             ctx.fillStyle = self.fill;
         }
-        self.fillShape(ctx);
+        if(self.getOpacity() < 1) {
+            ctx.save();
+            ctx.globalAlpha = self.getOpacity();
+            self.fillShape(ctx);
+            ctx.restore();
+        } else {
+            self.fillShape(ctx);
+        }
         if(self.strokeWidth > 0) {
             if(self.stroke.generate) {
                 ctx.strokeStyle = self.stroke.generate(ctx);
@@ -532,6 +556,14 @@ AminoShape.extend(AminoNode);
 
 AminoShape.prototype.getFill = function() {
 	return this.fill;
+}
+AminoShape.prototype.setOpacity = function(opacity) {
+	this.opacity = opacity;
+	this.setDirty();
+	return this;
+}
+AminoShape.prototype.getOpacity = function() {
+    return this.opacity;
 }
 
 //@property  stroke The stroke color of this shape. This can be a hex value or color name, both as strings. ex: setStroke("#000000") or setStroke("black");
@@ -573,6 +605,7 @@ the translate, rotate, and scale properties. ex:
 var r = new Rect().set(0,0,100,50).setFill("red");
 var t = new Transform(r).setTranslateX(50).setRotate(30);
 
+#category core
 @end 
 */
 function Transform(n) {
@@ -704,6 +737,7 @@ Transform.prototype.setDirty = function() {
 
 /*
 @class Group A parent node which holds an ordered list of child nodes. It does not draw anything by itself, but setting visible to false will hide the children. 
+#category core
 @end
 */
 
@@ -816,6 +850,9 @@ Group.extend(AminoNode, {});
 Animates a single property on a node.  You must call the constructor
 with the node, string name of the property, a start value, an end value
 and a duration. Then you can further customize it with functions.
+
+#category core
+
 @end
 */
 function PropAnim(node,prop,startValue,end,duration) {
@@ -928,6 +965,7 @@ PropAnim.prototype.setAutoReverse = function(autoReverse) {
 /*
 @class SerialAnim
 Performs several animations one after another.
+#category core
 @end
 */
 function SerialAnim() {
@@ -972,6 +1010,7 @@ SerialAnim.prototype.update = function() {
 /*
 @class ParallelAnim
 An animation which performs several other animations in Parallel
+#category core
 @end
 */
 function ParallelAnim() {
@@ -1016,6 +1055,7 @@ ParallelAnim.prototype.update = function() {
 @class CallbackAnim
 An animation which calls a function on every repaint. Mainly used
 for proceeduration animation like particle simulators.
+#category core
 @end
 */
 function CallbackAnim() {
