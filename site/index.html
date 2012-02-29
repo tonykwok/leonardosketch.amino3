@@ -3,6 +3,13 @@
 
 <html>
     <head>
+    <style type="text/css">
+
+    #content {
+    	max-width: 40em;
+    }
+
+    </style>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Amino Java/JavaScript Scene Graph</title>
         <link rel="stylesheet" href="resources/ChunkFive-fontfacekit/stylesheet.css" type="text/css" charset="utf-8">
@@ -18,7 +25,7 @@
 <div id="masthead">
 <canvas id="can" width="200" height="150"></canvas>
 <h1>Amino</h1>
-<h2>Java &amp; JavaScript Scenegraph</h2>
+<h2>HTML Canvas Scenegraph</h2>
 </div>
 
 
@@ -137,35 +144,27 @@ foo();
 
 <h3><a id="overview">Amino Overview</a></h3>
 
-<p>Amino is 100% open source (BSD) graphics library for Java and JavaScript. You
-can use Amino on the desktop in Java Swing applications or in a
-a browser using the HTML 5 Canvas tag. Amino makes it easy to
-create animated interactive graphics using a simple API.</p>
+<p>Amino is 2D scene graph library, 100% open source (BSD), for 
+HTML Canvas using JavaScript. With Amino you can easily
+create interactive graphics using a simple API. Declare shapes and animations then let
+Amino do the hard work of drawing and animating them. For example:</p>
 
-<p>Amino supports:</p>
-<ul>
-    <li>Shapes: rect, circle, bezier paths, images</li>
-    <li>Pixel effects: blur, shadow, contrast/brightness/saturation</li>
-    <li>Animation: properties with easing, anim along a path</li>
-    <li>Group, buffering, and transforms</li>
-    <li>JavaScript: mixing with web content</li>
-    <li>Java: mixing with Swing content</li>
-</ul>
-
-<p>Amino is a 2D scene graph library. You declare shapes and animations, then let
-Amino do the hard work of drawing them with a constant frame rate. This
-example draws a red rectangle with a black border that moves back
-and forth across the screen.</p>
-
-<pre><code>var runner = new Runner();
-var r = new Rect().set(10,20,50,50)
-	.setFill("red).setStroke("black").setStrokeWidth(5);
-runner.setRoot(r);
+<pre><code>//create Amino engine
+var engine = new Amino();
+//attach to HTML Canvas element
+var canvas = engine.addCanvas('mycanvas');
+//add rectangle to the scene
+var r = new Rect()
+    .set(10,20,50,50)
+	.setFill("red)
+	.setStroke("black")
+	.setStrokeWidth(5);
+canvas.add(r);
 
 //animate r.x from 0 -> 300 over 5.5 seconds, and repeat
-runner.addAnim(new Anim(r, "x", 0, 300, 5.5).setLoop(true));
+runner.addAnim(new PropAnim(r, "x", 0, 300, 5.5).setLoop(-1));
 
-//kick off the animation
+//let'er rip
 runner.start();
 </code></pre>
 
@@ -190,19 +189,26 @@ setup();
 
 </script>
 
+<h4>Features</h4>
+<ul>
+    <li>Shapes: rect, circle, bezier paths, images</li>
+    <li>Pixel effects: blur, shadow, contrast/brightness/saturation</li>
+    <li>Animation: properties with easing, anim along a path</li>
+    <li>Group, buffering, and transforms</li>
+    <li>Efficient repaints and scaling on mobile devices.</li>
+    <li>Seamlessly mix with other web content</li>
+</ul>
 
 <h4>Browser / Device / OS Support</h4>
-<p>The Java version of Amino should work on any OS with Java 1.6 or higher.</p>
 
-<p>The JavaScript version of Amino should work in any browser with Canvas support,
-    which means the most recent version of all major browsers (including Internet Explorer 9!).
-    If there's
-    an older version of a browser that doesn't work, but does have canvas support,
-    please <a href="http://code.google.com/p/leonardosketch/issues/list">file a bug</a>
-    so we can fix Amino.</p>
+<p>Amino should work in any browser with Canvas support,
+    which means the most recent version of all major browsers 
+    (including Internet Explorer 9!). If there's an older version of a 
+    browser that doesn't work, but does have canvas support,  please 
+    <a href="http://code.google.com/p/leonardosketch/issues/list">file a bug</a>
+    so we can fix it.</p>
 
-<p>Amino has also been tested on webOS 2.1,  iOS 4.3</p>
-
+<p>Amino has also been tested on webOS 2.1, webOS 3, iOS 4.3, iOS 5</p>
 
 
 <h3><a id="tutorial">Getting Started Tutorial</a></h3>
