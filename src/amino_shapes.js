@@ -2,6 +2,7 @@
 @class Rect
 
 A rectangle shape.
+#category shapes
 @end
 */
 
@@ -120,6 +121,7 @@ Rect.prototype.getCorner = function(corner) {
 @class Text
 A node which draws text with a single style. The text can have any
 CSS font setting and be positioned anywhere.
+#category shapes
 @end
 */
 
@@ -260,6 +262,7 @@ Text.prototype.contains = function(pt) {
 /*
 @class Circle
 A circle shape. The x and y are the *center* of the circle.
+#category shapes
 @end
 */
 function Circle() {
@@ -338,6 +341,7 @@ function Segment(kind,x,y,a,b,c,d) {
 
 /*
 @class Path A Path is a sequence of line and curve segments. It is used for drawing arbitrary shapes and animating.  Path objects are immutable. You should create them and then reuse them.
+#category shapes
 @end
 */
 function Path() {
@@ -427,6 +431,7 @@ function getBezier(percent, C1, C2, C3, C4) {
 
 /*
 @class PathNode Draws a path.
+#category shapes
 @end
 */
 function PathNode() {
@@ -522,6 +527,7 @@ PathNode.prototype.strokeShape = function (ctx) {
 @class Ellipse
 An ellipse / oval shape. X and Y and width and height represent 
 the rectangular bounds of the ellipse.
+#category shapes
 @end
 */
 function Ellipse() {
@@ -588,6 +594,7 @@ Ellipse.prototype.strokeShape = function (ctx) {
 /*
 @class ImageView
 A node which draws an image. You must create it using the constructor with a string URL. Ex:  var img = new ImageView("foo.png");
+#category shapes
 @end
 */
 function ImageView(url) {
@@ -660,6 +667,7 @@ A *fill* that can be used to fill shapes with a linear gradient. First
 create the gradient at an x,y,w,h using the constructor, then add
 colors using the *addStop* function.  The LinearGradientFill can be
 used with the *fill* property of any shape.
+#category shapes
 @end
 */
 function LinearGradientFill(x,y,width,height) {
@@ -695,6 +703,7 @@ A *fill* that can be used to fill shapes with a radial gradient. First
 create the gradient at an x,y, and radius using the constructor, then add
 colors using the *addStop* function.  The RadialGradientFill can be
 used with the *fill* property of any shape.
+#category shapes
 @end
 */
 function RadialGradientFill(x,y,radius) {
@@ -722,6 +731,7 @@ function RadialGradientFill(x,y,radius) {
 /*
 @class PatternFill
 A PatternFill fills a shape with an image, optionally repeated.
+#category shapes
 @end
 */
 function PatternFill(url, repeat) {

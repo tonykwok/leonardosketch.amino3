@@ -58,6 +58,11 @@ function parseData2(data) {
                 functions:[], 
                 properties:[],
             };
+            var category = /#category\s*(\w+)/m.exec(cls);
+            if(category) {
+                currentClass.category = category[1];
+            }
+
             docs.classes.push(currentClass);
         }
         
@@ -105,9 +110,34 @@ function generateHTML(docs) {
     w("<head><link rel='stylesheet' href='style.css'></link></head>");
     w("<body>");
    
+    var cats = {};
+    
+    docs.classes.forEach(function(cls) {
+        if(cls.category) {
+            if(!cats[cls.category]) {
+                cats[cls.category] = [];
+            }
+            cats[cls.category].push(cls);
+        }
+    });
+    
     w("<ul id='nav'>");
+    for(var cat in cats) {
+        w("<li>");
+        w("<p>"+cat+"</p>");
+        w("<ul>");
+        
+        cats[cat].forEach(function(cls) {
+            w("<li><a href='#"+cls.name+"'>"+cls.name+"</a></li>");
+            cls.rendered = true;
+        });
+        w("</ul>");
+        w("</li>");
+    }
+    
     for(var n in docs.classes) {
         var cls = docs.classes[n];
+        if(cls.rendered) continue;
         w("<li><a href='#"+cls.name+"'>"+cls.name+"</a></li>");
     }
     w("</ul>");
@@ -147,7 +177,7 @@ function generateHTML(docs) {
             w("<ul>");
             for(var f in cls.properties) {
                 w("<li>");
-                w("<b>" + cls.properties[f].name +"</b>");
+                w("<span><b>" + cls.properties[f].name +"</b></span>");
                 w(cls.properties[f].description);
                 w("</li>");
             }
