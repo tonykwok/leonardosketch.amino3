@@ -1,12 +1,18 @@
 /*
 @overview Amino: JavaScript Scenegraph
 
-Amino is a scenegraph for drawing 2D graphics in JavaScript with the
-HTML 5 Canvas API. By creating a tree of nodes, you can draw shapes,
-text, images special effects; complete with transforms and animation.
-Amino takes care of all rendering, animation, and event handling
-so you can build *rich* interactive graphics with very little code.
-Using Amino is much more convenient than writing canvas code by hand.
+Amino is a scenegraph for drawing 2D graphics 
+in JavaScript with the
+HTML 5 Canvas API. By creating a tree of nodes,
+you can draw shapes,
+text, images special effects; complete with
+transforms and animation.
+Amino takes care of all rendering, animation, 
+and event handling
+so you can build *rich* interactive graphics 
+with very little code.
+Using Amino is much more convenient than 
+writing Canvas code by hand.
 
 Here's a quick example:    
 

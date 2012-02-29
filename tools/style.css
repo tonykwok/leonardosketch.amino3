@@ -1,8 +1,7 @@
 body {
 	font-family: Helvetica, Verdana, Arial, sans-serif;
     margin-left: 14em;
-/*    margin-right: 10em;*/
-    border: 0px solid blue;
+    border: 0px solid black;
 }
 
 
@@ -76,7 +75,7 @@ black
 offwhite: #eee
 */
 body {
-	max-width: 30em;
+	max-width: 40em;
 	background-color: #36393B;
 	color: #eee;
 }
@@ -132,4 +131,8 @@ li span {
 	display: block;
 	margin-bottom: 0.5em;
 	color: #EEE6AB;
+	font-weight: normal;
+}
+li span b, li span i {
+	font-weight: normal;
 }
