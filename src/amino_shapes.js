@@ -20,6 +20,7 @@ function Rect() {
 	
 	this.setX = function(x) {
 	    this.x = x;
+	    this.setDirty();
 	    return this;
 	};
 	this.getX = function() {
@@ -27,18 +28,13 @@ function Rect() {
 	}
 	this.setY = function(y) {
 	    this.y = y;
+	    this.setDirty();
 	    return this;
 	};
 	this.getY = function() {
 	    return this.y;
 	}
 	
-	this.fillShape = function(ctx) {
-	    ctx.fillRect(self.x,self.y,self.w,self.h);
-	}
-	this.strokeShape = function(ctx) {
-	    ctx.strokeRect(self.x,self.y,self.w,self.h);
-	}
 	
 	//@function set(x,y,w,h)  set the x, y, width, and height all at the same time
 	this.set = function(x,y,w,h) {
@@ -46,6 +42,7 @@ function Rect() {
         this.y = y;
         this.w = w;
         this.h = h;
+        this.setDirty();
         return this;
     }
     
@@ -60,7 +57,62 @@ function Rect() {
 	return this;
 }
 Rect.extend(AminoShape);
-
+Rect.prototype.fillShape = function(ctx) {
+    if(this.corner > 0) {
+        var x = this.x;
+        var y = this.y;
+        var w = this.w;
+        var h = this.h;
+        var r = this.corner;
+        ctx.beginPath();
+        ctx.moveTo(x+r,y);
+        ctx.lineTo(x+w-r, y);
+        ctx.bezierCurveTo(x+w-r/2,y,   x+w,y+r/2,   x+w,y+r);
+        ctx.lineTo(x+w,y+h-r);
+        ctx.bezierCurveTo(x+w,y+h-r/2, x+w-r/2,y+h, x+w-r, y+h);
+        ctx.lineTo(x+r,y+h);
+        ctx.bezierCurveTo(x+r/2,y+h,   x,y+h-r/2,   x,y+h-r);
+        ctx.lineTo(x,y+r);
+        ctx.bezierCurveTo(x,y+r/2,     x+r/2,y,     x+r,y);
+        ctx.closePath();
+        ctx.fill();
+    } else {
+        ctx.fillRect(this.x,this.y,this.w,this.h);
+    }
+}
+Rect.prototype.strokeShape = function(ctx) {
+    if(this.corner > 0) {
+        var x = this.x;
+        var y = this.y;
+        var w = this.w;
+        var h = this.h;
+        var r = this.corner;
+        ctx.beginPath();
+        ctx.moveTo(x+r,y);
+        ctx.lineTo(x+w-r, y);
+        ctx.bezierCurveTo(x+w-r/2,y,   x+w,y+r/2,   x+w,y+r);
+        ctx.lineTo(x+w,y+h-r);
+        ctx.bezierCurveTo(x+w,y+h-r/2, x+w-r/2,y+h, x+w-r, y+h);
+        ctx.lineTo(x+r,y+h);
+        ctx.bezierCurveTo(x+r/2,y+h,   x,y+h-r/2,   x,y+h-r);
+        ctx.lineTo(x,y+r);
+        ctx.bezierCurveTo(x,y+r/2,     x+r/2,y,     x+r,y);
+        ctx.closePath();
+        ctx.strokeStyle = this.getStroke();
+        ctx.lineWidth = this.strokeWidth;
+        ctx.stroke();
+    } else {
+        ctx.strokeRect(this.x,this.y,this.w,this.h);
+    }
+}
+Rect.prototype.setCorner = function(corner) {
+    this.corner = corner;
+	this.setDirty();
+    return this;
+}
+Rect.prototype.getCorner = function(corner) {
+    return this.corner;
+}
 
 
 
@@ -120,6 +172,11 @@ Text.prototype.fillShape = function(g) {
 	g.fillStyle = this.fill;
 	g.font = this.font;
 	g.fillText(this.text,this.x,this.y);
+}
+Text.prototype.strokeShape = function(g) {
+	g.fillStyle = this.fill;
+	g.font = this.font;
+	g.strokeText(this.text,this.x,this.y);
 }
 Text.prototype.contains = function(pt) {
 	return false;
@@ -369,7 +426,23 @@ PathNode.prototype.fillShape = function(ctx) {
         ctx.fill();
     }
 }
-
+PathNode.prototype.strokeShape = function (ctx) {
+    ctx.beginPath();
+    for(var i=0; i<this.path.segments.length; i++) {
+        var s = this.path.segments[i];
+        if(s.kind == SEGMENT_MOVETO) 
+            ctx.moveTo(s.x,s.y);
+        if(s.kind == SEGMENT_LINETO) 
+            ctx.lineTo(s.x,s.y);
+        if(s.kind == SEGMENT_CURVETO)
+            ctx.bezierCurveTo(s.cx1,s.cy1,s.cx2,s.cy2,s.x,s.y);
+        if(s.kind == SEGMENT_CLOSETO)
+            ctx.closePath();
+    }
+    if(this.path.closed) {
+        ctx.stroke();
+    }
+}
 
 /*
 @class Ellipse
@@ -428,13 +501,14 @@ function Ellipse() {
         ctx.bezierCurveTo(eX, mY + vB, mX + hB, eY, mX, eY);
         ctx.bezierCurveTo(mX - hB, eY, aX, mY + vB, aX, mY);
         ctx.closePath();
-        ctx.save();
         ctx.fill();
-        ctx.restore();
     };
     return true;
 };
 Ellipse.extend(AminoShape);
+Ellipse.prototype.strokeShape = function (ctx) {
+    ctx.stroke();
+}
 
 
 /*
@@ -458,7 +532,6 @@ function ImageView(url) {
         this.width = 10;
         this.height = 10;
         this.img.onload = function() {
-            console.log("loaded");
             self.loaded = true;
             self.setDirty();
             self.width = self.img.width;

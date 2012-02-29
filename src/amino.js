@@ -503,6 +503,7 @@ function AminoShape() {
 	this.fill = "gray";
 	this.stroke = "black";
 	this.strokeWidth = 0;
+	this.opacity = 1.0;
 	
 	//@property fill  The fill color of this shape. This can be a hex string like "#ff0000" or a color name like "red" or a complex fill such as a gradient.
 	this.setFill = function(fill) {
@@ -510,13 +511,21 @@ function AminoShape() {
 	    self.setDirty();
 	    return self;
 	}
+	
 	this.paint = function(ctx) {
         if(self.fill.generate) {
             ctx.fillStyle = self.fill.generate(ctx);
         } else {
             ctx.fillStyle = self.fill;
         }
-        self.fillShape(ctx);
+        if(self.getOpacity() < 1) {
+            ctx.save();
+            ctx.globalAlpha = self.getOpacity();
+            self.fillShape(ctx);
+            ctx.restore();
+        } else {
+            self.fillShape(ctx);
+        }
         if(self.strokeWidth > 0) {
             if(self.stroke.generate) {
                 ctx.strokeStyle = self.stroke.generate(ctx);
@@ -532,6 +541,14 @@ AminoShape.extend(AminoNode);
 
 AminoShape.prototype.getFill = function() {
 	return this.fill;
+}
+AminoShape.prototype.setOpacity = function(opacity) {
+	this.opacity = opacity;
+	this.setDirty();
+	return this;
+}
+AminoShape.prototype.getOpacity = function() {
+    return this.opacity;
 }
 
 //@property  stroke The stroke color of this shape. This can be a hex value or color name, both as strings. ex: setStroke("#000000") or setStroke("black");
