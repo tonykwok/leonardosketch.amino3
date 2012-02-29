@@ -50,5 +50,86 @@ body {
 	})();
 </script>
 
+
+<h3>Adjust canvas properly when resizing</h3>
+<canvas id="test4" width="200" height="200" style='border:1px solid red;' ></canvas>
+<style type='text/css'>
+#test4 { width: 50% }
+</style>
+<script type="text/javascript">
+	(function() {
+		var engine = new Amino();
+		engine.autoPaint = true;
+		var can = engine.addCanvas("test4");
+		can.add(new Rect()
+		    .set(10,10,40,40)
+		    .setFill("white")
+		    .setStroke("black")
+		    .setStrokeWidth(1)
+		    );
+		can.add(new Circle()
+		    .set(100,50,20)
+		    .setFill("white")
+		    .setStroke("black")
+		    .setStrokeWidth(1));
+		engine.start();
+	})();
+</script>
+
+<h3>don't scale canvas when resizing</h3>
+<canvas id="test5" width="200" height="200" style='border:1px solid red;' ></canvas>
+<style type='text/css'>
+#test5 { width: 50% }
+</style>
+<script type="text/javascript">
+	(function() {
+		var engine = new Amino();
+		engine.autoPaint = true;
+		var can = engine.addCanvas("test5");
+		can.autoSize = false;
+		can.autoScale = false;
+		can.add(new Rect()
+		    .set(10,10,40,40)
+		    .setFill("white")
+		    .setStroke("black")
+		    .setStrokeWidth(1)
+		    );
+		can.add(new Circle()
+		    .set(100,50,20)
+		    .setFill("white")
+		    .setStroke("black")
+		    .setStrokeWidth(1));
+		engine.start();
+	})();
+</script>
+
+
+<h3>resize but don't auto scale canvas when resizing</h3>
+<canvas id="test6" width="200" height="200" style='border:1px solid red;' ></canvas>
+<style type='text/css'>
+#test6 { width: 50% }
+</style>
+<script type="text/javascript">
+	(function() {
+		var engine = new Amino();
+		engine.autoPaint = true;
+		var can = engine.addCanvas("test6");
+		can.autoSize = true;
+		can.autoScale = false;
+		can.add(new Rect()
+		    .set(10,10,40,40)
+		    .setFill("white")
+		    .setStroke("black")
+		    .setStrokeWidth(1)
+		    );
+		can.add(new Circle()
+		    .set(100,50,20)
+		    .setFill("white")
+		    .setStroke("black")
+		    .setStrokeWidth(1));
+		engine.start();
+	})();
+</script>
+
 </body>
 </html>

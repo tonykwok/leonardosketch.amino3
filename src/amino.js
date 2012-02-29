@@ -206,7 +206,14 @@ function Canvas(engine,domCanvas) {
 	this.mousePressed = false;
 	this.bgfill = "white";
 	this.transparent = false;
+	this.oldwidth = -1;
 	var self = this;
+	
+	this.autoSize = true;
+	this.autoScale = true;
+	
+    this.ratio = this.domCanvas.width / this.domCanvas.height;
+    this.originalWidth = this.domCanvas.width;
 	
 	this.processEvent = function(type,domCanvas,e,et) {
 	    e.preventDefault();
@@ -317,6 +324,7 @@ function Canvas(engine,domCanvas) {
         }
         return null;
     }
+    
 }
 
 
@@ -324,6 +332,17 @@ Canvas.prototype.repaint = function() {
 	var ctx = this.domCanvas.getContext('2d');
 	this.width = this.domCanvas.width;
 	this.height = this.domCanvas.height;
+	
+//	console.log("width = " + this.domCanvas.width 
+//	    + " client width = " + this.domCanvas.clientWidth);
+	var w = this.domCanvas.clientWidth;
+	if(w != this.oldwidth && this.autoSize) {
+	    this.domCanvas.width = w;
+	    this.domCanvas.height = w/this.ratio;
+		this.oldwidth = w;
+	}
+	
+	
 	ctx.fillStyle = this.bgfill;
 	if(this.transparent) {
 	    ctx.clearRect(0,0,this.width,this.height);
@@ -337,6 +356,12 @@ Canvas.prototype.repaint = function() {
 	ctx.save();
 	//ctx.rect(0,0,100,100);
 	//ctx.clip();
+	if(this.autoScale) {
+	    var scale =  w/this.originalWidth;
+	    ctx.scale(scale,scale);
+	}
+	
+	
 	for(var i=0; i<this.nodes.length; i++) {
 		var node = this.nodes[i];
 		node.paint(ctx);
