@@ -40,6 +40,11 @@
 <!--    <exec command="node tools/joshdoc.js"/>-->
     <exec command="node tools/joshdoc.js" output="dist/doc/test.html"/>
     <copy todir="dist/doc" file="tools/style.css"/>
+    <copy todir="dist/doc">
+        <fileset dir='tools'>
+            <include name="resources/*"/>
+        </fileset>
+    </copy>
 </target>
 
 <target name="clean">
