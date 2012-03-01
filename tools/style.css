@@ -78,7 +78,7 @@ a {
 body {
 	max-width: 40em;
 	background-color: #36393B;
-	background-image: url(../../tools/resources/dark_gray_texture.png);
+	background-image: url(resources/dark_gray_texture.png);
 	color: #eee;
 }
 p {
@@ -86,7 +86,7 @@ p {
 }
 #nav {
     background-color: #45484B;
-	background-image: url(../../tools/resources/med_gray_texture.png);
+	background-image: url(resources/med_gray_texture.png);
     color: #EEE6AB;
     border: 1px solid black;
     border-width: 0 1px 0 0;
