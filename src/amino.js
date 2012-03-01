@@ -124,9 +124,10 @@ You generally only need one of these per page. It is
 the first thing you create. Attach canvases to it using
 addCanvas. ex:  
 
-var amino = new Amino(); 
-var canvas = amino.addCanvas('canvasid');
+    var amino = new Amino(); 
+    var canvas = amino.addCanvas('canvasid');
 
+    
 @end
 */
 function Amino() {
@@ -202,9 +203,10 @@ Amino.prototype.animationChanged = function() {
 }
 
 /*
-@class Canvas represents a drawable area on the screen, usually
+@class Canvas 
+Canvas represents a drawable area on the screen, usually
 a canvas tag.  Create it using the Amino class by passing the
-ID of your canvas tag to amino.addClass(id);
+ID of your canvas element to amino.addCanvas(id);
 
 #category core
 
