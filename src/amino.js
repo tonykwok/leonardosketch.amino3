@@ -57,7 +57,6 @@ can set a bunch of properties at once like this:
         .setStrokeWidth(5)
         .setStroke("black")
         ;
-    
 @end
 */
 
@@ -126,8 +125,6 @@ addCanvas. ex:
 
     var amino = new Amino(); 
     var canvas = amino.addCanvas('canvasid');
-
-    
 @end
 */
 function Amino() {
@@ -604,8 +601,8 @@ A transform applies an affine transform to it's child node.  You must
 pass the child node to the Transform constructor. Then you can set
 the translate, rotate, and scale properties. ex:
 
-var r = new Rect().set(0,0,100,50).setFill("red");
-var t = new Transform(r).setTranslateX(50).setRotate(30);
+    var r = new Rect().set(0,0,100,50).setFill("red");
+    var t = new Transform(r).setTranslateX(50).setRotate(30);
 
 #category core
 @end 
@@ -853,7 +850,16 @@ Animates a single property on a node.  You must call the constructor
 with the node, string name of the property, a start value, an end value
 and a duration. Then you can further customize it with functions.
 
-#category core
+#category animation
+
+Example: to create a property animation that make a rectangle's width go from
+50 to 100 over half a second, and loop forever do the following:
+
+    var anim = new PropAnim(rect,"w",50,100,0.5)
+        .setLoopCount(-1)
+        .start();
+    engine.addAnim(anim);
+
 
 @end
 */
@@ -967,7 +973,7 @@ PropAnim.prototype.setAutoReverse = function(autoReverse) {
 /*
 @class SerialAnim
 Performs several animations one after another.
-#category core
+#category animation
 @end
 */
 function SerialAnim() {
@@ -1012,7 +1018,7 @@ SerialAnim.prototype.update = function() {
 /*
 @class ParallelAnim
 An animation which performs several other animations in Parallel
-#category core
+#category animation
 @end
 */
 function ParallelAnim() {
@@ -1057,7 +1063,7 @@ ParallelAnim.prototype.update = function() {
 @class CallbackAnim
 An animation which calls a function on every repaint. Mainly used
 for proceeduration animation like particle simulators.
-#category core
+#category animation
 @end
 */
 function CallbackAnim() {

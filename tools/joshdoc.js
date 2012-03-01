@@ -48,32 +48,60 @@ if line starts with @overview then doing an overview
 
 function Parser() {
     this.incode = false;
-    this.endCode = function() {
-        this.docs.overview += "</code></pre>\n";
-        this.incode = false;
-    };
+    this.inpara = false;
+    this.insideoverview = false;
+    this.insideclass = false;
+    this.currentClass = null;
+    
     this.startCode = function() {
-        this.docs.overview += "<pre><code>";
         this.incode = true;
-    };
-    this.appendOverview = function(line) {
-        if(this.incode) {
-            this.docs.overview += escape(line+"\n");
-        } else {
-            this.docs.overview += (line+"\n");
+        if(this.insideclass) {
+            this.currentClass.description += "<pre><code>";
+            return;
         }
-    }
-    this.appendDescription = function(currentClass, line) {
-        currentClass.description += (line+"\n");
-    }
-    this.startCodeClass = function(currentClass) {
-        currentClass.description += "<pre><code>";
-        this.incode = true;
+        if(this.insideoverview) {
+            this.docs.overview += "<pre><code>";
+        }
     };
-    this.endCodeClass = function(currentClass) {
-        currentClass.description += "</code></pre>";
+    
+    this.endCode = function() {
         this.incode = false;
+        if(this.insideclass) {
+            this.currentClass.description += "</code></pre>\n";
+            return;
+        }
+        if(this.insideoverview) {
+            this.docs.overview += "</code></pre>\n";
+        }
     };
+    
+    this.append = function(line) {
+        var str = "";
+        
+        if(this.incode) {
+            str =  escape(line+"\n");
+        } else {
+            str = (line+"\n");
+        }
+        
+        if(this.insideclass) {
+            this.currentClass.description += str;
+        }
+        if(this.insideoverview) {
+            this.docs.overview += str;
+        }
+        
+    }
+    
+    this.startPara = function() {
+        this.docs.overview += "<p>\n";
+        this.inpara = true;
+    }
+    
+    this.endPara = function() {
+        this.docs.overview += "</p>\n";
+        this.inpara = false;
+    }
     
     this.isBlank = function(line) {
         return /^\s*$/.test(line);
@@ -96,9 +124,6 @@ function parseData3(data) {
     
     var lines = data.split("\n");
     var insidecomment = false;
-    var insideoverview = false;
-    var insideclass = false;
-    var inpara = false;
     
     var p = new Parser();
     p.docs = docs;
@@ -123,72 +148,61 @@ function parseData3(data) {
         if(!insidecomment && !insideonelinecomment) continue;
         
         if(/^\@overview/.test(line)) {
-            insideoverview = true;
-            //console.log("inside overview");
+            p.insideoverview = true;
+            p.docs.overviewName = (/\@overview\s*(.*)$/.exec(line))[1];
+            continue;
         }
         
         //end an overview or class
         if(/^\@end/.test(line)) {
-            if(p.incode && insideoverview) {
+            if(p.incode) {
                 p.endCode();
             }
-            if(p.incode && insideclass) {
-                p.endCodeClass(currentClass);
-            }
-            insideoverview = false;
-            insideclass = false;
+            p.insideoverview = false;
+            p.insideclass = false;
         }
         
         //start a class
         if(/^\@class/.test(line)) {
-            insideclass = true;
+            p.insideclass = true;
             var r = /@class\s*(\w+)\s*(.*)/;
             var r2 = r.exec(line);
-            //w("real class = " + r2[1]);
-            currentClass = {
+            p.currentClass = {
                 name:r2[1],
                 description:"",
                 functions:[], 
                 properties:[],
             };
-            //if(category) {
-            //    currentClass.category = category[1];
-            //}
-
-            docs.classes.push(currentClass);
+            docs.classes.push(p.currentClass);
             continue;
         }
         
         //category
         if(/^#category/.test(line)) {
-            //console.log("category = " + line);
             var category = /#category\s*(\w+)/m.exec(line);
-            currentClass.category = category[1];
+            p.currentClass.category = category[1];
             continue;
         }
         
         //property
         if(/.*\@property/.test(line)) {
             var r1 = /property\s*(\w+)\s*(.*)/.exec(line);
-            //console.log("property " + r1[2]);
             var prop = { name: r1[1], description: r1[2]};
-            currentClass.properties.push(prop);
+            p.currentClass.properties.push(prop);
         }
         
         if(/.*\@function/.test(line)) {
-            var r2 = /function\s*(\w+)\s*(.*)/.exec(line);
-            //qconsole.log("fun " + r2[1]);
-            var fun = { name: r2[1], description: r2[2]};
-            currentClass.functions.push(fun);
+            var r2 = /@function\s*(\w+)\s*(\(\S*\))*\s*(.*)/m.exec(line);
+            //var r =  /@function\s*(\w+)\s*(\(\S*\))*\s*(.*)/m;
+            var fun = { name: r2[1], args:r2[2], description: r2[3]};
+            p.currentClass.functions.push(fun);
         }
             
-        if(insideoverview) {
-            //w("overview = " + line);
+        if(p.insideclass || p.insideoverview) {
             //if blank line
             if(p.isBlank(line)) {
-                if(inpara) {
-                    docs.overview += "</p>\n";
-                    inpara = false;
+                if(p.inpara) {
+                    p.endPara();
                 }
             } else {
                 
@@ -202,38 +216,13 @@ function parseData3(data) {
                     if(p.incode) {
                         p.endCode();
                     }
-                    if(!inpara) {
-                        docs.overview += "<p>\n";
-                        inpara = true;
+                    if(!p.inpara) {
+                        p.startPara();
                     }
                 }
             }
-            p.appendOverview(line);
+            p.append(line);
         }
-        if(insideclass) {
-            if(p.isBlank(line)) {
-                if(inpara) {
-                    currentClass.description += "</p>\n";
-                    inpara = false;
-                }
-            } else {
-                if(p.isIndented(line)) {
-                    if(!p.incode) {
-                        p.startCodeClass(currentClass);
-                    }
-                } else {
-                    if(p.incode) {
-                        p.endCodeClass(currentClass);
-                    }
-                    if(!inpara) {
-                        currentClass.description += "<p>\n";
-                        inpara = true;
-                    }
-                }
-            }
-            p.appendDescription(currentClass, line);
-        }
-        //w("line = " + line);
     }
     
     return docs;
@@ -277,7 +266,8 @@ function parseData2(data) {
         
         if(res[1] == "function") {
             //var r = /@function\s*(\w+)\s*(.*)/gm;
-            var r = /@function\s*(\w+)\s*(\(\S*\))*\s*(.*)/gm;
+            //var r = /@function  \s*  (\w+)  \s* (\(\S*\))  *\s*(.*)/m;
+            var r = /@function\s*(\w+)\s*(\(\S*\))*\s*(.*)/m;
             r.lastIndex = res.index;
             var r2 = r.exec(data);
             var fun = { name: r2[1], args:r2[2], description: r2[3]};
@@ -352,10 +342,12 @@ function generateHTML(docs) {
     w("</ul>");
     
     w("<div id='overview'>");
+    w("<h1>"+docs.overviewName+"</h1>");
     w(docs.overview);
     w("</div>");
     
     
+    w("<div id='content'>");
     for(var n in docs.classes) {
         
         var cls = docs.classes[n];
@@ -394,6 +386,8 @@ function generateHTML(docs) {
         }
         
     }
+    
+    w("</div>");
     
     w("</body></html>");
 }

@@ -1,3 +1,17 @@
+/*
+light to dark
+white
+EEE6AB
+C5BC8E
+696758
+45484B
+36393B
+dark gray: #555
+black
+
+offwhite: #eee
+*/
+
 body {
 	font-family: Helvetica, Verdana, Arial, sans-serif;
     margin-left: 14em;
@@ -61,35 +75,46 @@ a {
 
 
 
-/*
-light to dark
-white
-EEE6AB
-C5BC8E
-696758
-45484B
-36393B
-dark gray: #555
-black
-
-offwhite: #eee
-*/
 body {
 	max-width: 40em;
 	background-color: #36393B;
+	background-image: url(../../tools/resources/dark_gray_texture.png);
 	color: #eee;
+}
+p {
+	line-height: 140%;
 }
 #nav {
     background-color: #45484B;
+	background-image: url(../../tools/resources/med_gray_texture.png);
     color: #EEE6AB;
+    border: 1px solid black;
+    border-width: 0 1px 0 0;
 }
 #nav li {
-    background-color: #45484B;
     border-width: 0;
     border-radius: 0;
     padding: 0;
     margin: 0;
+	margin-top: 1em;
 }
+
+
+#nav li p {
+	margin: 0px;
+	padding: 0px;
+	color: white;
+}
+
+#nav ul {
+    margin: 0 0 0 1em;
+}
+
+#nav li li {
+    margin-top: 0 ;
+}
+
+
 #nav a {
     color: #EEE6AB;
 }
@@ -98,7 +123,8 @@ body {
     padding: 1rem;
 }
 
-h2 {
+
+h1, h2 {
     color: white;
     font-weight: normal;
     font-size: 300%;
@@ -109,20 +135,16 @@ h3 {
     color: #C5BC8E;
 }
 
-ul li {
+#content ul li {
     border: 1px solid #555;
     border-radius: 10px;
-    background-color: #45484B;
     margin: 1em;
     padding: 1em;
-    color: white;
 }
 
 pre {
-    background-color: #EEE6AB;
     padding: 1em;
     margin: 1em;
-    color: black;
     border-radius: 10px;
 }
 
@@ -130,9 +152,25 @@ pre {
 li span {
 	display: block;
 	margin-bottom: 0.5em;
-	color: #EEE6AB;
 	font-weight: normal;
 }
 li span b, li span i {
 	font-weight: normal;
+}
+
+
+/* ==== colors ==== */
+
+pre {
+    background-color: #EEE6AB;
+    color: black;
+}
+
+#content li {
+    background-color: #45484B;
+    color: #eee;
+}
+
+#content li span {
+	color: #EEE6AB;
 }

@@ -3,6 +3,16 @@
 
 A rectangle shape.
 #category shapes
+
+Example: create a red rectangle with a 5px black border and 20px rounded corners:
+
+    var rect = new Rect()
+        .set(0,0,100,30)
+        .setFill("red")
+        .setStroke("black")
+        .setStrokeWidth(5)
+        .setCorner(20);
+
 @end
 */
 
