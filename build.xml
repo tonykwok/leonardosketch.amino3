@@ -38,7 +38,7 @@
 <target name="doc-js">
     <mkdir dir="dist/doc"/>
 <!--    <exec command="node tools/joshdoc.js"/>-->
-    <exec command="node tools/joshdoc.js" output="dist/doc/test.html"/>
+    <exec command="node tools/joshdoc.js" output="dist/doc/doc.html"/>
     <copy todir="dist/doc" file="tools/style.css"/>
     <copy todir="dist/doc">
         <fileset dir='tools'>
@@ -47,11 +47,19 @@
     </copy>
 </target>
 
+<target name="tests-js">
+    <mkdir dir='dist/tests'/>
+    <copy todir='dist/tests'>
+        <fileset dir='tests'>
+        </fileset>
+    </copy>
+</target>
+
 <target name="clean">
     <delete dir="dist"/>
 </target>
 
-<target name="publish" depends="init, build-js, doc-js">
+<target name="publish" depends="init, build-js, doc-js, tests-js">
     <copy todir="${publish.dir}">
         <fileset dir="dist/">
         </fileset>
