@@ -345,8 +345,6 @@ Canvas.prototype.repaint = function() {
 	this.width = this.domCanvas.width;
 	this.height = this.domCanvas.height;
 	
-//	console.log("width = " + this.domCanvas.width 
-//	    + " client width = " + this.domCanvas.clientWidth);
 	var w = this.domCanvas.clientWidth;
 	if(window.devicePixelRatio == 2) {
 	    w = w*2;
@@ -369,8 +367,6 @@ Canvas.prototype.repaint = function() {
 	ctx.engine = this.engine;
 	
 	ctx.save();
-	//ctx.rect(0,0,100,100);
-	//ctx.clip();
 	if(this.autoScale) {
 	    var scale =  w/this.originalWidth;
 	    ctx.scale(scale,scale);
